@@ -32,7 +32,7 @@ export default function BlotterPage() {
   );
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col lg:flex-row">
+    <main className="flex min-h-0 flex-1 flex-col min-[1700px]:flex-row">
       <section aria-label="Trades" className="flex min-h-0 min-w-0 flex-1 flex-col">
         <TradesToolbar
           filters={filters}
@@ -45,7 +45,7 @@ export default function BlotterPage() {
           <BlotterGrid ref={grid} filters={filters} context={context} onTotalChange={setTotal} />
         </div>
       </section>
-      <PositionsPanel className="h-72 shrink-0 border-t lg:h-auto lg:w-[460px] lg:border-t-0 lg:border-l" />
+      <PositionsPanel className="h-64 shrink-0 border-t min-[1700px]:h-auto min-[1700px]:w-[520px] min-[1700px]:border-t-0 min-[1700px]:border-l" />
       <TradeFormDialog state={dialog} onClose={() => setDialog(null)} />
       <CancelTradeDialog trade={cancelling} onClose={() => setCancelling(null)} />
       <AuditSheet trade={auditOf} onClose={() => setAuditOf(null)} />
