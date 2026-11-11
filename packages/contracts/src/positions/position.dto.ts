@@ -8,11 +8,13 @@ export interface PositionDto {
   priceAsOf: IsoDateTime | null;
   marketValue: number | null;
   unrealisedPnl: number | null;
+  realisedPnl: number;
   tradeCount: number;
 }
 
 export interface PositionSummaryDto {
   positions: PositionDto[];
   totalUnrealisedPnl: number;
+  totalRealisedPnl: number;
   totalMarketValue: number;
 }
