@@ -1,0 +1,10 @@
+{
+  "extends": "@blotter/config/tsconfig/library.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": []
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.spec.ts"]
+}
