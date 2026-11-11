@@ -7,6 +7,13 @@ const ServiceEnvSchema = z.object({
   RABBITMQ_EXCHANGE: z.string().min(1).default('blotter'),
   /** Random trades generated on first start when the trades table is empty (0 disables). */
   SEED_TRADE_COUNT: z.coerce.number().int().min(0).max(1000).default(500),
+  /** HS256 key for access tokens. The default is for local development only. */
+  JWT_SECRET: z
+    .string()
+    .min(32, 'JWT_SECRET must be at least 32 characters')
+    .default('dev-only-jwt-secret-change-me-in-any-real-deployment'),
+  ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().min(60).max(86_400).default(900),
+  REFRESH_TOKEN_TTL_SECONDS: z.coerce.number().int().min(300).max(2_592_000).default(604_800),
   /** Mock market ticker interval (0 disables it). */
   PRICE_TICK_MS: z.coerce.number().int().min(0).max(60_000).default(2000),
 });

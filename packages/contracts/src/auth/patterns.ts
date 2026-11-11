@@ -4,6 +4,8 @@ export const AuthPatterns = {
   LOGOUT: 'auth.logout',
   ISSUE_SOCKET_TICKET: 'auth.issueSocketTicket',
   REDEEM_SOCKET_TICKET: 'auth.redeemSocketTicket',
+  /** The API checks the access-token cookie with the service and gets the Actor back. */
+  VERIFY_ACCESS_TOKEN: 'auth.verifyAccessToken',
 } as const;
 
 /** Cookie and header names shared by the API and the web. */

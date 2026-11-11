@@ -45,6 +45,8 @@ services:
       <<: *rabbitmq-env
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER:-blotter}:${POSTGRES_PASSWORD:-blotter}@postgres:5432/${POSTGRES_DB:-blotter}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-jwt-secret-change-me-in-any-real-deployment}
+      PRICE_TICK_MS: ${PRICE_TICK_MS:-2000}
     # Apply migrations, then start (the service seeds trades itself when the table is empty).
     command:
       - sh

@@ -23,6 +23,8 @@
     "@nestjs/microservices": "^12.4.2",
     "amqp-connection-manager": "^5.0.1",
     "amqplib": "^0.10.9",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.17",
     "prisma": "^7.10.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",

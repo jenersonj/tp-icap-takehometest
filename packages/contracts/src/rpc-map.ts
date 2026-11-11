@@ -8,11 +8,13 @@ import type {
   LogoutRequest,
   RedeemSocketTicketRequest,
   RefreshRequest,
+  VerifyAccessTokenRequest,
 } from './auth/auth.request.js';
 import type {
   AuthTokensRecord,
   RedeemedSocketTicketRecord,
   SocketTicketRecord,
+  VerifiedAccessTokenRecord,
 } from './auth/auth.response.js';
 import type { PositionPatterns } from './positions/patterns.js';
 import type { ListPositionsRequest } from './positions/position.request.js';
@@ -59,6 +61,10 @@ export interface RpcMap {
   [AuthPatterns.REDEEM_SOCKET_TICKET]: {
     request: RedeemSocketTicketRequest;
     response: RedeemedSocketTicketRecord;
+  };
+  [AuthPatterns.VERIFY_ACCESS_TOKEN]: {
+    request: VerifyAccessTokenRequest;
+    response: VerifiedAccessTokenRecord;
   };
 }
 

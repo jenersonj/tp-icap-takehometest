@@ -1,4 +1,4 @@
-import type { Role } from '../common/actor.js';
+import type { Actor, Role } from '../common/actor.js';
 import type { IsoDateTime } from '../common/primitives.js';
 
 export interface SessionUser {
@@ -25,6 +25,13 @@ export interface SocketTicketRecord {
 
 export interface RedeemedSocketTicketRecord {
   userId: string;
+  user: SessionUser;
   allowedGroups: string[];
   sessionExpiresAt: IsoDateTime;
+}
+
+/** Reply to auth.verifyAccessToken: who the caller is, ready to send with commands. */
+export interface VerifiedAccessTokenRecord {
+  actor: Actor;
+  expiresAt: IsoDateTime;
 }

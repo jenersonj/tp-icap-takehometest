@@ -33,6 +33,10 @@ export class DomainError extends Error {
     return new DomainError(ErrorCode.NOT_FOUND, `${entity} ${id} was not found`, { id });
   }
 
+  static unauthenticated(message: string): DomainError {
+    return new DomainError(ErrorCode.UNAUTHENTICATED, message);
+  }
+
   static forbidden(message: string): DomainError {
     return new DomainError(ErrorCode.FORBIDDEN, message);
   }

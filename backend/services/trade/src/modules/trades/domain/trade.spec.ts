@@ -136,6 +136,10 @@ describe('Trade.amend', () => {
     expect(trade.book).toBe('TECH_GROWTH');
   });
 
+  it('is forbidden for viewers', () => {
+    expect(codeOf(() => newTrade().amend({ quantity: 1 }, 1, viewer, now))).toBe('FORBIDDEN');
+  });
+
   it('cannot amend a cancelled trade', () => {
     const trade = newTrade();
     trade.cancel(1, trader, now);
