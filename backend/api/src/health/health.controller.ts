@@ -3,12 +3,15 @@ import { MESSAGE_BUS, TypedMessageBus, type MessageBus } from '@blotter/messagin
 import { Controller, Get, HttpCode, HttpStatus, Inject, Res } from '@nestjs/common';
 import type { Response } from 'express';
 
+import { Public } from '../shared/auth/decorators.js';
+
 export interface HealthReport {
   status: 'ok' | 'degraded';
   service: 'ok' | 'unreachable';
   at: string;
 }
 
+@Public()
 @Controller({ path: 'health', version: '1' })
 export class HealthController {
   private readonly rpc: TypedMessageBus<RpcMap>;
