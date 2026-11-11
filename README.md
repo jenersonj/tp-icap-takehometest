@@ -53,10 +53,11 @@ The full design, with C4 diagrams, sequences, the event catalogue, the data mode
 
 ## Prerequisites
 
-- **Docker** with Compose v2 (Docker Desktop on macOS and Windows). This is the only requirement for running the whole system.
-- For local development: **Node.js 24 LTS** (see `.nvmrc`) and **pnpm 10** (`corepack enable` turns it on).
+- **Docker** with Compose v2 (Docker Desktop on macOS and Windows, with the WSL 2 backend on Windows). This is the only requirement for running the whole system. Give Docker at least 4 GB of memory; the first `--build` downloads base images and installs dependencies, so it takes a few minutes, and later builds are cached.
+- For local development: **Node.js 24 LTS** (see `.nvmrc`; `nvm use` picks it up) and **pnpm 10.28** (pinned in `package.json`; `corepack enable` installs it).
+- These host ports must be free: 8080, 3000, 3001, 5432, 5672 and 15672. Each one can be changed (see below).
 
-Everything works on macOS, Linux and Windows. Line endings are pinned to LF through `.gitattributes`.
+Everything works on macOS (Intel and Apple Silicon), Linux and Windows: every image is multi-arch, and line endings are pinned to LF through `.gitattributes`.
 
 ## Run with Docker
 
@@ -72,11 +73,14 @@ Then open <http://localhost:8080> and sign in with a demo account (password `pas
 | `abrown` | TRADER | EQUITIES_US, TECH_GROWTH |
 | `viewer` | VIEWER | read-only                |
 
-If port 5432 is already taken on your machine (for example by another Postgres), choose another host port; the containers still talk to Postgres on 5432 inside the network:
+**If a port is already taken** (for example by another Postgres on 5432), give it another host port. The containers still talk to each other on the standard ports inside the Docker network. The simplest way, which works in every shell including PowerShell, is a `.env` file next to `docker-compose.yml`:
 
 ```bash
-POSTGRES_PORT=5433 docker compose up --build
+cp .env.example .env    # then edit, e.g. POSTGRES_PORT=5433
+docker compose up --build
 ```
+
+On macOS and Linux you can also set it inline: `POSTGRES_PORT=5433 docker compose up --build`. The variables are `WEB_PORT`, `API_PORT`, `REALTIME_PORT`, `POSTGRES_PORT`, `RABBITMQ_PORT` and `RABBITMQ_MANAGEMENT_PORT`.
 
 | Container | Port        | Notes                                                                   |
 | --------- | ----------- | ----------------------------------------------------------------------- |
@@ -84,12 +88,12 @@ POSTGRES_PORT=5433 docker compose up --build
 | api       | 3000        | `/api/v1`, Swagger at `/api/docs`, health at `/api/v1/health`           |
 | realtime  | 3001        | `GET /health`                                                           |
 | service   | none        | Applies migrations, seeds users, prices and 500 trades on first start   |
-| postgres  | 5432        | Named volume `postgres-data`; host port set by `POSTGRES_PORT`          |
+| postgres  | 5432        | Named volume `postgres-data`                                            |
 | rabbitmq  | 5672, 15672 | Management UI at <http://localhost:15672> (login `blotter` / `blotter`) |
 
 Health checks control the start order. To start again from an empty database, run `docker compose down -v`.
 
-Defaults work out of the box. To change ports or credentials, copy `.env.example` to `.env`.
+Defaults work out of the box; `.env` is only needed to change ports or credentials.
 
 ## Run locally for development
 
@@ -100,13 +104,16 @@ pnpm install
 # Infrastructure only
 docker compose up -d postgres rabbitmq
 
-# Database
+# Database (if you changed POSTGRES_PORT or RABBITMQ_PORT in .env, change the port in
+# DATABASE_URL or RABBITMQ_URL to match)
 cp .env.example .env
 pnpm --filter @blotter/database exec prisma migrate deploy
 
 # All apps in watch mode (web on :8080, api on :3000, realtime on :3001)
 pnpm dev
 ```
+
+The service seeds the demo users, prices and 500 trades on its first start, so open <http://localhost:8080> and sign in as above. `pnpm install` may print "Ignored build scripts" for a few optional native packages; that is expected and nothing needs approving. `pnpm dev` builds the shared packages first, which also generates the Prisma client.
 
 Useful commands:
 
@@ -122,22 +129,22 @@ Useful commands:
 
 ```bash
 pnpm test               # unit tests in every workspace (Vitest)
-pnpm test:integration   # integration tests against real RabbitMQ (needs Docker)
+pnpm test:integration   # integration tests against a real RabbitMQ (needs Docker running)
 ```
 
-| Workspace                | Tests | What is covered                                                                                                                                                                                           |
-| ------------------------ | ----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/contracts`     |    26 | zod schemas (validation rules, defaults, query parsing), error-code-to-HTTP mapping, event catalogue                                                                                                      |
-| `packages/messaging`     |    14 | In-memory bus semantics (replies, coded errors, timeouts, correlation ids, events); integration tests run RabbitMQ in Testcontainers                                                                      |
-| `database`               |     6 | Random trade generator: reproducible, valid against the create-trade rules, weekdays and session hours only                                                                                               |
-| `backend/services/trade` |    69 | Trade aggregate rules, price walk bounds, position and P&L maths, every command and query handler with in-memory fakes (login, refresh rotation and reuse, socket tickets, ticks), bcrypt and JWT         |
-| `backend/api`            |    21 | Supertest against an in-memory fake service: cookie flags, CSRF, 400/401/403/404/409 mapping, DTO mapping, the Actor taken from the session, Swagger                                                      |
-| `backend/realtime`       |    10 | A real Socket.IO server with socket.io-client: refused and single-use tickets, group join, subscribe acks, emit to group, client and all, session-expiry disconnect                                       |
-| `frontend`               |    30 | Vitest + Testing Library: API client (CSRF, refresh-and-retry, errors), realtime client and hooks, login form, trade form (validation, amend diff, 409 reload), audit trail, positions table, price ticks |
+| Workspace                | Tests | What is covered                                                                                                                                                                                          |
+| ------------------------ | ----: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/contracts`     |    26 | zod schemas (validation rules, defaults, query parsing), error-code-to-HTTP mapping, event catalogue                                                                                                     |
+| `packages/messaging`     |    14 | In-memory bus semantics (replies, coded errors, timeouts, correlation ids, events); integration tests run RabbitMQ in Testcontainers                                                                     |
+| `database`               |     6 | Random trade generator: reproducible, valid against the create-trade rules, weekdays and session hours only                                                                                              |
+| `backend/services/trade` |    69 | Trade aggregate rules, price walk bounds, position and P&L maths, every command and query handler with in-memory fakes (login, refresh rotation and reuse, socket tickets, ticks), bcrypt and JWT        |
+| `backend/api`            |    21 | Supertest against an in-memory fake service: cookie flags, CSRF, 400/401/403/404/409 mapping, DTO mapping, the Actor taken from the session, Swagger                                                     |
+| `backend/realtime`       |    10 | A real Socket.IO server with socket.io-client: refused and single-use tickets, group join, subscribe acks, emit to group, client and all, session-expiry disconnect                                      |
+| `frontend`               |    31 | Vitest + Testing Library: API client (CSRF, refresh-and-retry, errors), realtime client and hooks, login form, trade form (validation, amend diff, 409 reload), audit trail, positions grid, price ticks |
 
 The full flow was also checked in a real browser with Playwright against the Docker stack: sign in, create, amend and cancel a trade as `jsmith` while a second browser signed in as `viewer` sees each change live; the screenshots in `docs/screenshots` come from that run.
 
-`docker-compose.test.yml` provides throwaway Postgres and RabbitMQ instances on separate ports for the service integration tests.
+The integration tests start their own RabbitMQ with Testcontainers, so Docker only needs to be running. `docker-compose.test.yml` provides throwaway Postgres and RabbitMQ instances on separate ports for the planned service integration tests against Postgres.
 
 ## Project layout
 

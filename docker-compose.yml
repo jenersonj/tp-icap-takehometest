@@ -28,8 +28,8 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-blotter}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-blotter}
     ports:
-      - '5672:5672'
-      - '15672:15672' # management UI
+      - '${RABBITMQ_PORT:-5672}:5672'
+      - '${RABBITMQ_MANAGEMENT_PORT:-15672}:15672' # management UI
     healthcheck:
       test: ['CMD', 'rabbitmq-diagnostics', '-q', 'check_port_connectivity']
       interval: 5s
