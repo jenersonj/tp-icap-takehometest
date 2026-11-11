@@ -2,13 +2,12 @@
 
 import { useTheme } from 'next-themes';
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
-
 import {
   CircleCheckIcon,
   InfoIcon,
-  Loader2Icon,
-  OctagonXIcon,
   TriangleAlertIcon,
+  OctagonXIcon,
+  Loader2Icon,
 } from 'lucide-react';
 
 const Toaster = ({ ...props }: ToasterProps) => {
@@ -35,7 +34,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }
       toastOptions={{
         classNames: {
-          toast: '',
+          toast: 'cn-toast',
         },
       }}
       {...props}
