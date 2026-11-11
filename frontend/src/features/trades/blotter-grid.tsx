@@ -8,8 +8,6 @@ import {
 } from '@blotter/contracts';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  AllCommunityModule,
-  ModuleRegistry,
   type ColDef,
   type GetRowIdParams,
   type GridApi,
@@ -23,16 +21,14 @@ import { toast } from 'sonner';
 
 import { errorMessage } from '@/shared/api/api-error';
 import { queryKeys } from '@/shared/api/query-keys';
+import { defaultColDef, gridContainerClass, gridTheme } from '@/shared/grid/data-grid';
 import { formatDateTime, formatMoney, formatPrice, formatQty } from '@/shared/lib/format';
 import { throttle } from '@/shared/lib/throttle';
 import { useRealtimeEvent } from '@/shared/realtime/realtime-provider';
 
-import { blotterGridTheme } from './grid-theme';
 import { ActionsCell, SideCell, StatusCell, type TradeGridContext } from './trade-cells';
 import type { TradeFilters } from './trade-filters';
 import { tradesApi } from './trades-api';
-
-ModuleRegistry.registerModules([AllCommunityModule]);
 
 export const PAGE_SIZE = 100;
 const SORTABLE = new Set<string>(TRADE_SORT_FIELDS);
@@ -174,16 +170,16 @@ export const BlotterGrid = forwardRef<
   useRealtimeEvent(TradeEvents.CANCELLED, onTradeEvent);
 
   return (
-    <div className="blotter-grid h-full w-full tabular-nums">
+    <div className={gridContainerClass}>
       <AgGridReact<TradeDto>
-        theme={blotterGridTheme}
+        theme={gridTheme}
         rowModelType="infinite"
         datasource={datasource}
         cacheBlockSize={PAGE_SIZE}
         maxBlocksInCache={20}
         infiniteInitialRowCount={PAGE_SIZE}
         columnDefs={columns}
-        defaultColDef={{ sortable: true, resizable: true, suppressHeaderMenuButton: true }}
+        defaultColDef={defaultColDef}
         getRowId={(p: GetRowIdParams<TradeDto>) => p.data.id}
         context={context}
         onGridReady={(e) => {

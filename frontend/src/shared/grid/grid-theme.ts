@@ -4,7 +4,7 @@ import { themeQuartz } from 'ag-grid-community';
  * AG Grid's Quartz theme fed from the shadcn colour tokens, so the grid follows the light and
  * dark theme with no second palette. Dense rows and tabular numbers suit a blotter.
  */
-export const blotterGridTheme = themeQuartz.withParams({
+export const gridTheme = themeQuartz.withParams({
   backgroundColor: 'var(--background)',
   foregroundColor: 'var(--foreground)',
   borderColor: 'var(--border)',
