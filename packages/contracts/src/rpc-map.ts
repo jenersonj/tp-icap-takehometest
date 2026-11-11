@@ -1,35 +1,35 @@
-import type { AuditPatterns } from './audit/patterns';
-import type { AuditEntryRecord } from './audit/audit.response';
-import type { ListAuditForTradeRequest } from './audit/audit.request';
-import type { AuthPatterns } from './auth/patterns';
+import type { AuditPatterns } from './audit/patterns.js';
+import type { AuditEntryRecord } from './audit/audit.response.js';
+import type { ListAuditForTradeRequest } from './audit/audit.request.js';
+import type { AuthPatterns } from './auth/patterns.js';
 import type {
   IssueSocketTicketRequest,
   LoginRequest,
   LogoutRequest,
   RedeemSocketTicketRequest,
   RefreshRequest,
-} from './auth/auth.request';
+} from './auth/auth.request.js';
 import type {
   AuthTokensRecord,
   RedeemedSocketTicketRecord,
   SocketTicketRecord,
-} from './auth/auth.response';
-import type { PositionPatterns } from './positions/patterns';
-import type { ListPositionsRequest } from './positions/position.request';
-import type { PositionRecord } from './positions/position.response';
-import type { PricePatterns } from './prices/patterns';
-import type { ListPricesRequest } from './prices/price.request';
-import type { PriceRecord } from './prices/price.response';
-import type { PingResponse, SystemPatterns } from './system';
-import type { TradePatterns } from './trades/patterns';
+} from './auth/auth.response.js';
+import type { PositionPatterns } from './positions/patterns.js';
+import type { ListPositionsRequest } from './positions/position.request.js';
+import type { PositionRecord } from './positions/position.response.js';
+import type { PricePatterns } from './prices/patterns.js';
+import type { ListPricesRequest } from './prices/price.request.js';
+import type { PriceRecord } from './prices/price.response.js';
+import type { PingResponse, SystemPatterns } from './system/index.js';
+import type { TradePatterns } from './trades/patterns.js';
 import type {
   AmendTradeRequest,
   CancelTradeRequest,
   CreateTradeRequest,
   GetTradeRequest,
   ListTradesRequest,
-} from './trades/trade.request';
-import type { TradePage, TradeRecord } from './trades/trade.response';
+} from './trades/trade.request.js';
+import type { TradePage, TradeRecord } from './trades/trade.response.js';
 
 /**
  * The RPC catalogue: every request/reply pattern the service answers, with its request

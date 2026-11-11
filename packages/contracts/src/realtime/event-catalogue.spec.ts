@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { ALL_REALTIME_GROUPS } from './groups';
-import { REALTIME_EVENT_GROUP, REALTIME_EVENT_NAMES, isRealtimeEventName } from './event-catalogue';
+import { ALL_REALTIME_GROUPS } from './groups.js';
+import {
+  REALTIME_EVENT_GROUP,
+  REALTIME_EVENT_NAMES,
+  isRealtimeEventName,
+} from './event-catalogue.js';
 
 describe('realtime event catalogue', () => {
   it('lists the six events from ARCHITECTURE.md', () => {

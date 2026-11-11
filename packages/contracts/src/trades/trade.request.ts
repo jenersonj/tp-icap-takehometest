@@ -1,14 +1,19 @@
 import { z } from 'zod';
 
-import { ActorSchema } from '../common/actor';
-import { PageQuerySchema } from '../common/pagination';
-import { IsoDateTimeSchema, PriceSchema, QuantitySchema, UuidSchema } from '../common/primitives';
+import { ActorSchema } from '../common/actor.js';
+import { PageQuerySchema } from '../common/pagination.js';
+import {
+  IsoDateTimeSchema,
+  PriceSchema,
+  QuantitySchema,
+  UuidSchema,
+} from '../common/primitives.js';
 import {
   SideSchema,
   TRADE_SORT_FIELDS,
   TradeStatusSchema,
   type TradeSortField,
-} from './trade.model';
+} from './trade.model.js';
 
 /*
  * Shape validation only. Business rules (known symbol, book the user may trade, state

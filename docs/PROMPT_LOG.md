@@ -74,4 +74,16 @@ The full design is in [ARCHITECTURE.md](./ARCHITECTURE.md), which Jenerson signe
 Implementation choices Claude made within the decisions, for Jenerson to review:
 
 - Only errors that extend `CodedError` cross the bus with their code; anything else becomes `INTERNAL`. A test caught that Node system errors such as `ECONNREFUSED` would otherwise have leaked through.
-- Tooling versions are pinned to proven majors (NestJS 11, Prisma 6, TypeScript 5.9, Vitest 3) instead of the newest ones (NestJS 12, Prisma 7, TypeScript 7), to keep decorator metadata and the Prisma setup predictable.
+- Tooling versions were first pinned to proven majors (NestJS 11, Prisma 6, TypeScript 5.9); see the next entry.
+
+## 9. Latest versions
+
+**Prompt (Jenerson):** "Why not use the latest versions?"
+
+**Outcome:** Claude admitted the pinning was caution rather than a verified incompatibility, and offered a spike: upgrade everything, rerun the tests and the Docker build, and keep anything that fails at its current version. Jenerson chose to upgrade. The results:
+
+- **TypeScript 7 was rejected; TypeScript 6.0 is used instead.** TS 7 (the Go-native compiler) does emit decorator metadata, but it has no stable JS API yet. typescript-eslint supports up to `<6.1` and Nest CLI 12 bundles TS 6.0.
+- **NestJS 12** is ESM-only, so every workspace package moved to `"type": "module"` with `NodeNext` imports. The RabbitMQ topic-exchange routing was retested against a real broker and still works. One typing change was needed: `EventPattern` is now generic.
+- **Prisma 7.10** (the newest stable; npm's `latest` tag points at an 8.0 release candidate). It uses the new `prisma-client` generator, `prisma.config.ts`, and the `pg` driver adapter. With no query-engine binary, the Docker image no longer needs OpenSSL or `binaryTargets`.
+- Vitest 5, ESLint 10, React 19.3, Next 16.4 and Testcontainers 12 upgraded without code changes.
+- Runtime is **Node 24 LTS** (`node:24-alpine`), with `@types/node` 24 to match the runtime rather than the newest typings.

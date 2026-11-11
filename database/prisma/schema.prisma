@@ -3,14 +3,15 @@
 // immutable TradeAudit row with before/after snapshots.
 
 generator client {
-  provider      = "prisma-client-js"
-  // native for local dev, musl variants for the node:22-alpine images (x64 and Apple Silicon)
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
+  // Prisma 7 TypeScript client, generated into the package (src/generated is gitignored).
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
 }
 
+// The connection URL lives in prisma.config.ts (CLI) and is passed to the pg driver adapter at runtime.
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Side {

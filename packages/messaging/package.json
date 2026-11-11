@@ -2,6 +2,7 @@
   "name": "@blotter/messaging",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "MessageBus abstraction (request/publish/handle/subscribe) with RabbitMQ and in-memory adapters",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -31,24 +32,24 @@
     "amqplib": "^0.10.9"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11",
-    "@nestjs/core": "^11",
-    "@nestjs/microservices": "^11",
+    "@nestjs/common": "^12",
+    "@nestjs/core": "^12",
+    "@nestjs/microservices": "^12",
     "reflect-metadata": "^0.2",
     "rxjs": "^7"
   },
   "devDependencies": {
     "@blotter/config": "workspace:*",
-    "@nestjs/common": "^11.1.0",
-    "@nestjs/core": "^11.1.0",
-    "@nestjs/microservices": "^11.1.0",
+    "@nestjs/common": "^12.4.2",
+    "@nestjs/core": "^12.4.2",
+    "@nestjs/microservices": "^12.4.2",
     "@types/amqplib": "^0.10.7",
-    "eslint": "^9.39.5",
+    "eslint": "^10.14.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "testcontainers": "^11.7.1",
-    "@testcontainers/rabbitmq": "^11.7.1",
-    "typescript": "~5.9.3",
-    "vitest": "^3.2.7"
+    "testcontainers": "^12.2.1",
+    "@testcontainers/rabbitmq": "^12.2.1",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
   }
 }

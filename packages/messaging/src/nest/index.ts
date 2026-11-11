@@ -1,2 +1,2 @@
-export * from './messaging.module';
-export * from './rpc-route.decorator';
+export * from './messaging.module.js';
+export * from './rpc-route.decorator.js';

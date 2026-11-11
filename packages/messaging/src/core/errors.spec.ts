@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { CodedError, toRpcErrorBody } from './errors';
+import { CodedError, toRpcErrorBody } from './errors.js';
 
 describe('toRpcErrorBody', () => {
   it('keeps code, message and details of coded errors', () => {

@@ -1,7 +1,7 @@
-import { runWithCorrelationId } from './correlation';
-import { errorReply, okReply, type MessageEnvelope, type RpcReply } from './envelope';
-import { toRpcErrorBody } from './errors';
-import type { EventHandler, MessageContext, RequestHandler } from './message-bus';
+import { runWithCorrelationId } from './correlation.js';
+import { errorReply, okReply, type MessageEnvelope, type RpcReply } from './envelope.js';
+import { toRpcErrorBody } from './errors.js';
+import type { EventHandler, MessageContext, RequestHandler } from './message-bus.js';
 
 export interface DispatchLogger {
   error(message: string, meta?: Record<string, unknown>): void;

@@ -1,1 +1,1 @@
-export * from './rmq-message-bus';
+export * from './rmq-message-bus.js';

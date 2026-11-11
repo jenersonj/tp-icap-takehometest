@@ -5,8 +5,8 @@ import { RmqMessageBus, nestDispatchLogger } from '@blotter/messaging';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
-import { AppModule } from './app.module';
-import { loadServiceConfig } from './config/service.config';
+import { AppModule } from './app.module.js';
+import { loadServiceConfig } from './config/service.config.js';
 
 async function bootstrap(): Promise<void> {
   const config = loadServiceConfig();

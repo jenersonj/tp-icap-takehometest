@@ -1,4 +1,4 @@
-import type { RpcErrorBody } from './envelope';
+import type { RpcErrorBody } from './envelope.js';
 
 /** Codes produced by the messaging layer itself (domain codes come from the handlers). */
 export const MessagingErrorCode = {

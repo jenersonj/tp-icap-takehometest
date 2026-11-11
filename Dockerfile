@@ -3,8 +3,8 @@
 #   --build-arg APP=@blotter/api --build-arg APP_DIR=backend/api --target nest
 #   --build-arg APP=@blotter/frontend --build-arg APP_DIR=frontend --target web
 
-FROM node:22-alpine AS base
-# node:22-alpine already ships libssl 3, which is all Prisma's query engine needs.
+FROM node:24-alpine AS base
+# Prisma 7 uses the pg driver adapter, so no query-engine binary or OpenSSL setup is needed.
 RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=true TURBO_TELEMETRY_DISABLED=1 NEXT_TELEMETRY_DISABLED=1
 WORKDIR /repo
@@ -36,7 +36,7 @@ USER node
 CMD ["node", "dist/main.js"]
 
 # 3b. Next.js standalone server.
-FROM node:22-alpine AS web
+FROM node:24-alpine AS web
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=8080 HOSTNAME=0.0.0.0
 WORKDIR /app
 COPY --from=build --chown=node:node /repo/frontend/.next/standalone ./

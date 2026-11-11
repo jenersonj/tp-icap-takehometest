@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ErrorCode, httpStatusFor } from './errors';
+import { ErrorCode, httpStatusFor } from './errors.js';
 
 describe('httpStatusFor', () => {
   it('maps the codes named in ARCHITECTURE.md', () => {

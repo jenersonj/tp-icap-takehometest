@@ -1,8 +1,8 @@
 import { MessagingModule, type MessageBus } from '@blotter/messaging';
 import { Module, type DynamicModule } from '@nestjs/common';
 
-import { REALTIME_CONFIG, type RealtimeConfig } from './config/realtime.config';
-import { HealthController } from './health/health.controller';
+import { REALTIME_CONFIG, type RealtimeConfig } from './config/realtime.config.js';
+import { HealthController } from './health/health.controller.js';
 
 /** Holds sockets and group membership; emits only when the service tells it to. */
 @Module({})

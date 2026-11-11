@@ -1,1 +1,1 @@
-export * from './in-memory-message-bus';
+export * from './in-memory-message-bus.js';

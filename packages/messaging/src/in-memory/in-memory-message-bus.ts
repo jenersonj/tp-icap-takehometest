@@ -1,7 +1,7 @@
-import { currentCorrelationId, newCorrelationId } from '../core/correlation';
-import { dispatchEvent, dispatchRequest } from '../core/dispatch';
-import { type MessageEnvelope } from '../core/envelope';
-import { MessageTimeoutError, RemoteError, TransportError } from '../core/errors';
+import { currentCorrelationId, newCorrelationId } from '../core/correlation.js';
+import { dispatchEvent, dispatchRequest } from '../core/dispatch.js';
+import { type MessageEnvelope } from '../core/envelope.js';
+import { MessageTimeoutError, RemoteError, TransportError } from '../core/errors.js';
 import {
   DEFAULT_REQUEST_TIMEOUT_MS,
   type EventHandler,
@@ -9,7 +9,7 @@ import {
   type PublishOptions,
   type RequestHandler,
   type RequestOptions,
-} from '../core/message-bus';
+} from '../core/message-bus.js';
 
 export interface PublishedMessage<T = unknown> {
   topic: string;

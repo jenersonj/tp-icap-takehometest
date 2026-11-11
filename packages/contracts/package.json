@@ -2,6 +2,7 @@
   "name": "@blotter/contracts",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "Shared contracts: RPC patterns, request/response types, zod schemas, realtime event catalogue",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,8 +27,8 @@
   },
   "devDependencies": {
     "@blotter/config": "workspace:*",
-    "eslint": "^9.39.5",
-    "typescript": "~5.9.3",
-    "vitest": "^3.2.7"
+    "eslint": "^10.14.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
   }
 }

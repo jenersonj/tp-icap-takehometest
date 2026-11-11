@@ -1,8 +1,8 @@
 import { MessagingModule, type MessageBus } from '@blotter/messaging';
 import { Module, type DynamicModule } from '@nestjs/common';
 
-import { SERVICE_CONFIG, type ServiceConfig } from './config/service.config';
-import { SystemModule } from './modules/system/system.module';
+import { SERVICE_CONFIG, type ServiceConfig } from './config/service.config.js';
+import { SystemModule } from './modules/system/system.module.js';
 
 /**
  * One process hosting every domain module for now. Each module only talks to the others

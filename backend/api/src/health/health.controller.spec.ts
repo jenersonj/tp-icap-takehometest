@@ -5,7 +5,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { HealthController } from './health.controller';
+import { HealthController } from './health.controller.js';
 
 async function appWith(bus: InMemoryMessageBus): Promise<INestApplication> {
   const moduleRef = await Test.createTestingModule({

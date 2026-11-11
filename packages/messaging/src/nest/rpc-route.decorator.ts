@@ -10,10 +10,10 @@ import {
 import { EventPattern, MessagePattern } from '@nestjs/microservices';
 import { Observable, catchError, map, of } from 'rxjs';
 
-import { runWithCorrelationId } from '../core/correlation';
-import { errorReply, isMessageEnvelope, okReply, type RpcReply } from '../core/envelope';
-import { toRpcErrorBody } from '../core/errors';
-import type { MessageContext } from '../core/message-bus';
+import { runWithCorrelationId } from '../core/correlation.js';
+import { errorReply, isMessageEnvelope, okReply, type RpcReply } from '../core/envelope.js';
+import { toRpcErrorBody } from '../core/errors.js';
+import type { MessageContext } from '../core/message-bus.js';
 
 /**
  * Wraps a Nest `@MessagePattern` handler so it speaks the bus envelope: the handler
@@ -53,7 +53,10 @@ export const RpcRoute = (pattern: string): MethodDecorator =>
 
 /** `@EventRoute('realtime.emitToGroup')` consumes that fire-and-forget topic. */
 export const EventRoute = (topic: string): MethodDecorator =>
-  applyDecorators(EventPattern(topic), UseInterceptors(EventEnvelopeInterceptor));
+  applyDecorators(
+    EventPattern<string>(topic) as MethodDecorator,
+    UseInterceptors(EventEnvelopeInterceptor),
+  );
 
 /** The envelope's payload (the request body of the RPC). */
 export const RpcPayload = createParamDecorator((_: unknown, ctx: ExecutionContext): unknown => {

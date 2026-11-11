@@ -1,4 +1,4 @@
-import type { IsoDateTime } from '../common/primitives';
+import type { IsoDateTime } from '../common/primitives.js';
 
 /**
  * Net position per symbol over ACTIVE trades, computed on request (decision 6).

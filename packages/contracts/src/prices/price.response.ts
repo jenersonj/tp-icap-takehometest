@@ -1,4 +1,4 @@
-import type { IsoDateTime } from '../common/primitives';
+import type { IsoDateTime } from '../common/primitives.js';
 
 export interface PriceRecord {
   symbol: string;

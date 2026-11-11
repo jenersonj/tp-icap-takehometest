@@ -4,8 +4,8 @@ import { Logger, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 
-import { AppModule } from './app.module';
-import { loadApiConfig } from './config/api.config';
+import { AppModule } from './app.module.js';
+import { loadApiConfig } from './config/api.config.js';
 
 async function bootstrap(): Promise<void> {
   const config = loadApiConfig();

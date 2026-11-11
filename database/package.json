@@ -2,6 +2,7 @@
   "name": "@blotter/database",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "Prisma schema, migrations and the random trade generator used for seeding",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -13,11 +14,9 @@
   },
   "files": [
     "dist",
-    "prisma"
+    "prisma",
+    "prisma.config.ts"
   ],
-  "prisma": {
-    "schema": "prisma/schema.prisma"
-  },
   "scripts": {
     "build": "prisma generate && tsc -p tsconfig.build.json",
     "generate": "prisma generate",
@@ -30,13 +29,14 @@
   },
   "dependencies": {
     "@blotter/contracts": "workspace:*",
-    "@prisma/client": "~6.19.3"
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1"
   },
   "devDependencies": {
     "@blotter/config": "workspace:*",
-    "eslint": "^9.39.5",
-    "prisma": "~6.19.3",
-    "typescript": "~5.9.3",
-    "vitest": "^3.2.7"
+    "eslint": "^10.14.0",
+    "prisma": "^7.10.1",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
   }
 }

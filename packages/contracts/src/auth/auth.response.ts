@@ -1,5 +1,5 @@
-import type { Role } from '../common/actor';
-import type { IsoDateTime } from '../common/primitives';
+import type { Role } from '../common/actor.js';
+import type { IsoDateTime } from '../common/primitives.js';
 
 export interface SessionUser {
   id: string;

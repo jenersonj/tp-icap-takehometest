@@ -5,11 +5,11 @@ import { NestFactory } from '@nestjs/core';
 import { RabbitMQContainer, type StartedRabbitMQContainer } from '@testcontainers/rabbitmq';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { currentCorrelationId, runWithCorrelationId } from '../src/core/correlation';
-import { CodedError } from '../src/core/errors';
-import { RpcMeta, RpcPayload, RpcRoute } from '../src/nest/rpc-route.decorator';
-import { RmqMessageBus } from '../src/rmq/rmq-message-bus';
-import type { MessageContext } from '../src/core/message-bus';
+import { currentCorrelationId, runWithCorrelationId } from '../src/core/correlation.js';
+import { CodedError } from '../src/core/errors.js';
+import { RpcMeta, RpcPayload, RpcRoute } from '../src/nest/rpc-route.decorator.js';
+import { RmqMessageBus } from '../src/rmq/rmq-message-bus.js';
+import type { MessageContext } from '../src/core/message-bus.js';
 
 @Controller()
 class GreetingController {

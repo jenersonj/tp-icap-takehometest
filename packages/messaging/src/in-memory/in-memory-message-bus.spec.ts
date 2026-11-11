@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { currentCorrelationId, runWithCorrelationId } from '../core/correlation';
-import { CodedError, MessageTimeoutError, RemoteError, TransportError } from '../core/errors';
-import { TypedMessageBus } from '../core/typed-message-bus';
-import { InMemoryMessageBus } from './in-memory-message-bus';
+import { currentCorrelationId, runWithCorrelationId } from '../core/correlation.js';
+import { CodedError, MessageTimeoutError, RemoteError, TransportError } from '../core/errors.js';
+import { TypedMessageBus } from '../core/typed-message-bus.js';
+import { InMemoryMessageBus } from './in-memory-message-bus.js';
 
 describe('InMemoryMessageBus', () => {
   it('returns the handler result for a request', async () => {

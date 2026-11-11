@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { loadServiceConfig } from './service.config';
+import { loadServiceConfig } from './service.config.js';
 
 describe('loadServiceConfig', () => {
   it('requires DATABASE_URL', () => {

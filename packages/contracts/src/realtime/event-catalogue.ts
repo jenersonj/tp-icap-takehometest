@@ -1,8 +1,8 @@
-import { AuthEvents, type AuthExpiredEventData } from '../auth/events';
-import { PositionEvents, type PositionChangedEventData } from '../positions/events';
-import { PriceEvents, type PricesTickedEventData } from '../prices/events';
-import { TradeEvents, type TradeChangedEventData } from '../trades/events';
-import { RealtimeGroup } from './groups';
+import { AuthEvents, type AuthExpiredEventData } from '../auth/events.js';
+import { PositionEvents, type PositionChangedEventData } from '../positions/events.js';
+import { PriceEvents, type PricesTickedEventData } from '../prices/events.js';
+import { TradeEvents, type TradeChangedEventData } from '../trades/events.js';
+import { RealtimeGroup } from './groups.js';
 
 /**
  * Every event realtime can send to the web, with its payload. Payloads carry ids and

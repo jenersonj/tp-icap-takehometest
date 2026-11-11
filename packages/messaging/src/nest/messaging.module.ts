@@ -7,8 +7,8 @@ import {
   type OnApplicationShutdown,
 } from '@nestjs/common';
 
-import { MESSAGE_BUS, type MessageBus } from '../core/message-bus';
-import { RmqMessageBus, type RmqMessageBusOptions } from '../rmq/rmq-message-bus';
+import { MESSAGE_BUS, type MessageBus } from '../core/message-bus.js';
+import { RmqMessageBus, type RmqMessageBusOptions } from '../rmq/rmq-message-bus.js';
 
 /** Either RabbitMQ settings, or a ready bus (the app's own RmqMessageBus, or InMemoryMessageBus in tests). */
 export type MessagingModuleOptions = Omit<RmqMessageBusOptions, 'logger'> | { bus: MessageBus };

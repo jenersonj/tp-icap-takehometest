@@ -1,4 +1,4 @@
-export { Prisma, PrismaClient } from '@prisma/client';
+export { Prisma, PrismaClient } from './generated/prisma/client.js';
 export type {
   AuditAction as PrismaAuditAction,
   Price as PriceRow,
@@ -10,7 +10,8 @@ export type {
   TradeAudit as TradeAuditRow,
   TradeStatus as PrismaTradeStatus,
   User as UserRow,
-} from '@prisma/client';
-export * from '../seed/generate-trades';
-export * from '../seed/random';
-export * from '../seed/seed-users';
+} from './generated/prisma/client.js';
+export * from './prisma-client.js';
+export * from '../seed/generate-trades.js';
+export * from '../seed/random.js';
+export * from '../seed/seed-users.js';

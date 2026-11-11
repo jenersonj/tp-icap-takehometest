@@ -1,4 +1,4 @@
-import type { MessageBus, MessageContext, PublishOptions, RequestOptions } from './message-bus';
+import type { MessageBus, MessageContext, PublishOptions, RequestOptions } from './message-bus.js';
 
 /** A catalogue of request/reply patterns, e.g. `RpcMap` from @blotter/contracts. */
 export type RpcCatalogue<R> = { [K in keyof R]: { request: unknown; response: unknown } };

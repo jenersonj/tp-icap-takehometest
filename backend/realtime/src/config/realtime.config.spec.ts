@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { loadRealtimeConfig } from './realtime.config';
+import { loadRealtimeConfig } from './realtime.config.js';
 
 describe('loadRealtimeConfig', () => {
   it('applies defaults and splits CORS origins', () => {

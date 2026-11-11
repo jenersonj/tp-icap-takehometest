@@ -7,7 +7,7 @@ import {
 } from '@blotter/contracts';
 import { describe, expect, it } from 'vitest';
 
-import { formatTradeRef, generateTrades } from './generate-trades';
+import { formatTradeRef, generateTrades } from './generate-trades.js';
 
 const now = new Date('2026-08-18T17:00:00Z'); // a Tuesday
 

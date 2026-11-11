@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { BOOKS, SYMBOLS, isKnownBook, isKnownSymbol } from './reference-data';
+import { BOOKS, SYMBOLS, isKnownBook, isKnownSymbol } from './reference-data.js';
 
 describe('reference data', () => {
   it('includes the symbols and books from the brief sample', () => {

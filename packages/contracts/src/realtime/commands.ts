@@ -1,5 +1,5 @@
-import type { RealtimeEventMap, RealtimeEventName } from './event-catalogue';
-import type { RealtimeGroup } from './groups';
+import type { RealtimeEventMap, RealtimeEventName } from './event-catalogue.js';
+import type { RealtimeGroup } from './groups.js';
 
 /** Fire-and-forget commands the service publishes for realtime to execute. */
 export const RealtimeCommands = {

@@ -1,8 +1,8 @@
 import { MessagingModule } from '@blotter/messaging';
 import { Module, type DynamicModule } from '@nestjs/common';
 
-import { API_CONFIG, type ApiConfig } from './config/api.config';
-import { HealthController } from './health/health.controller';
+import { API_CONFIG, type ApiConfig } from './config/api.config.js';
+import { HealthController } from './health/health.controller.js';
 
 /** The BFF: HTTP in, RabbitMQ RPC out. No business logic, no DB, no realtime. */
 @Module({})

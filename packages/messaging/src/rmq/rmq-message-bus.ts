@@ -1,10 +1,10 @@
 import { ClientRMQ, ServerRMQ, type RmqOptions } from '@nestjs/microservices';
 import { TimeoutError, firstValueFrom, lastValueFrom, timeout } from 'rxjs';
 
-import { currentCorrelationId, newCorrelationId } from '../core/correlation';
-import { dispatchEvent, dispatchRequest, type DispatchLogger } from '../core/dispatch';
-import { isMessageEnvelope, isRpcReply, type MessageEnvelope } from '../core/envelope';
-import { MessageTimeoutError, RemoteError, TransportError } from '../core/errors';
+import { currentCorrelationId, newCorrelationId } from '../core/correlation.js';
+import { dispatchEvent, dispatchRequest, type DispatchLogger } from '../core/dispatch.js';
+import { isMessageEnvelope, isRpcReply, type MessageEnvelope } from '../core/envelope.js';
+import { MessageTimeoutError, RemoteError, TransportError } from '../core/errors.js';
 import {
   DEFAULT_REQUEST_TIMEOUT_MS,
   type EventHandler,
@@ -12,7 +12,7 @@ import {
   type PublishOptions,
   type RequestHandler,
   type RequestOptions,
-} from '../core/message-bus';
+} from '../core/message-bus.js';
 
 export interface RmqMessageBusOptions {
   /** e.g. amqp://guest:guest@rabbitmq:5672 */

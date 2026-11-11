@@ -5,7 +5,7 @@ import {
   CancelTradeInputSchema,
   CreateTradeInputSchema,
   ListTradesQuerySchema,
-} from './trade.request';
+} from './trade.request.js';
 
 const validTrade = {
   symbol: 'aapl ',

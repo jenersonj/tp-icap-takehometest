@@ -1,6 +1,6 @@
-import type { IsoDateTime } from '../common/primitives';
-import type { Page } from '../common/pagination';
-import type { Side, TradeStatus } from './trade.model';
+import type { IsoDateTime } from '../common/primitives.js';
+import type { Page } from '../common/pagination.js';
+import type { Side, TradeStatus } from './trade.model.js';
 
 /**
  * A trade as the service returns it over RPC. `price` is a decimal string so no precision

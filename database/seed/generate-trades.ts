@@ -8,7 +8,7 @@ import {
   type TradeStatus,
 } from '@blotter/contracts';
 
-import { createRandom, intBetween, pick, type Random } from './random';
+import { createRandom, intBetween, pick, type Random } from './random.js';
 
 export interface SeedTrade {
   tradeRef: string;

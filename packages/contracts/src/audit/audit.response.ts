@@ -1,5 +1,5 @@
-import type { IsoDateTime } from '../common/primitives';
-import type { AuditAction } from './audit.model';
+import type { IsoDateTime } from '../common/primitives.js';
+import type { AuditAction } from './audit.model.js';
 
 /** Business-field snapshot stored in the audit row (price as a decimal string). */
 export type TradeSnapshot = Record<string, string | number | null>;

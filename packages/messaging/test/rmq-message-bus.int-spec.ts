@@ -1,8 +1,8 @@
 import { RabbitMQContainer, type StartedRabbitMQContainer } from '@testcontainers/rabbitmq';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { CodedError, MessageTimeoutError, RemoteError } from '../src/core/errors';
-import { RmqMessageBus } from '../src/rmq/rmq-message-bus';
+import { CodedError, MessageTimeoutError, RemoteError } from '../src/core/errors.js';
+import { RmqMessageBus } from '../src/rmq/rmq-message-bus.js';
 
 /**
  * Proves the RabbitMQ adapter against a real broker: request/reply, error envelopes,

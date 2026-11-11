@@ -1,4 +1,4 @@
-import type { RealtimeGroup } from './groups';
+import type { RealtimeGroup } from './groups.js';
 
 /** Messages the web sends to realtime over the socket (with Socket.IO acks). */
 export const SocketClientMessages = {

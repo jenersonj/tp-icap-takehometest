@@ -1,5 +1,5 @@
-import type { IsoDateTime } from '../common/primitives';
-import type { AuditAction } from './audit.model';
+import type { IsoDateTime } from '../common/primitives.js';
+import type { AuditAction } from './audit.model.js';
 
 export interface AuditChangeDto {
   field: string;

@@ -5,8 +5,8 @@ import { RmqMessageBus, nestDispatchLogger } from '@blotter/messaging';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
-import { AppModule } from './app.module';
-import { loadRealtimeConfig } from './config/realtime.config';
+import { AppModule } from './app.module.js';
+import { loadRealtimeConfig } from './config/realtime.config.js';
 
 async function bootstrap(): Promise<void> {
   const config = loadRealtimeConfig();
