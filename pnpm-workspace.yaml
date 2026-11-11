@@ -1,6 +1,8 @@
 packages:
   - frontend
-  - backend/*
+  - backend/api
+  - backend/realtime
+  - backend/services/*
   - database
   - packages/*
 onlyBuiltDependencies:

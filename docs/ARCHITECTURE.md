@@ -165,6 +165,8 @@ sequenceDiagram
 
 ## Monorepo layout
 
+> Updated 2026-11-11 by Jenerson: domain services live under `backend/services/`, starting with `trade`.
+
 One pnpm workspace with Turborepo, laid out with the brief's deliverable folders (`frontend/`, `backend/`, `database/`, `docker-compose.yml` at the root); the shared packages are the only code the apps share.
 
 ```
@@ -172,7 +174,8 @@ trade-blotter/
   frontend/              Next.js (App Router) + TS
   backend/
     api/                 NestJS BFF (HTTP, /api/v1)
-    service/             NestJS microservice (RabbitMQ transport), all domains
+    services/
+      trade/             NestJS microservice (RabbitMQ transport), the initial service: all domains for now
     realtime/            NestJS + Socket.IO gateway, behind RealtimeGateway
   database/
     prisma/              schema.prisma, migrations/
@@ -201,7 +204,7 @@ trade-blotter/
 Each business entity is a self-contained module with the same four layers, and modules talk to each other only through domain events or their application ports, so any module can later move into its own process.
 
 ```
-backend/service/src/
+backend/services/trade/src/
   main.ts                          RabbitMQ microservice bootstrap
   shared/
     domain/                        Entity, ValueObject, DomainEvent, Result, DomainError

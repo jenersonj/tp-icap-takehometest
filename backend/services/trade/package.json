@@ -1,9 +1,9 @@
 {
-  "name": "@blotter/service",
+  "name": "@blotter/trade-service",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "NestJS microservice: all business logic (Clean Architecture + CQRS), Prisma, price ticker",
+  "description": "NestJS microservice: the initial domain service. Hosts trades, audit, positions, pricing and auth (Clean Architecture + CQRS, Prisma) until they are split out",
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch --preserveWatchOutput",

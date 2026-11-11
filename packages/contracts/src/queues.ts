@@ -1,9 +1,10 @@
 /**
- * RabbitMQ queue names. The service consumes RPC requests from SERVICE_RPC; realtime
- * consumes fire-and-forget emit commands from REALTIME_COMMANDS.
+ * RabbitMQ queue names. Each domain service consumes its RPC patterns from its own queue
+ * (routing is by pattern on the topic exchange, so splitting a module into a new service
+ * only means a new queue). Realtime consumes emit commands from REALTIME_COMMANDS.
  */
 export const Queues = {
-  SERVICE_RPC: 'blotter.service.rpc',
+  TRADE_SERVICE_RPC: 'blotter.trade-service.rpc',
   REALTIME_COMMANDS: 'blotter.realtime.commands',
 } as const;
 export type QueueName = (typeof Queues)[keyof typeof Queues];

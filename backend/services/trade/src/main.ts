@@ -12,16 +12,16 @@ import { AppModule } from './app.module.js';
 import { loadServiceConfig } from './config/service.config.js';
 
 // Local dev convenience: pick up the repo-root .env when present (Docker passes real env vars).
-const rootEnv = resolve(process.cwd(), '../../.env');
+const rootEnv = resolve(process.cwd(), '../../../.env');
 if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
 
 async function bootstrap(): Promise<void> {
   const config = loadServiceConfig();
-  const logger = new Logger('Service');
+  const logger = new Logger('TradeService');
   const bus = new RmqMessageBus({
     urls: [config.RABBITMQ_URL],
     exchange: config.RABBITMQ_EXCHANGE,
-    consumerQueue: Queues.SERVICE_RPC,
+    consumerQueue: Queues.TRADE_SERVICE_RPC,
     logger: nestDispatchLogger(logger),
   });
 
@@ -32,10 +32,10 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
   await app.listen();
   await bus.connect();
-  logger.log(`Consuming ${Queues.SERVICE_RPC} on exchange "${config.RABBITMQ_EXCHANGE}"`);
+  logger.log(`Consuming ${Queues.TRADE_SERVICE_RPC} on exchange "${config.RABBITMQ_EXCHANGE}"`);
 }
 
 void bootstrap().catch((error: unknown) => {
-  new Logger('Service').error(error instanceof Error ? error.stack : String(error));
+  new Logger('TradeService').error(error instanceof Error ? error.stack : String(error));
   process.exit(1);
 });

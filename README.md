@@ -19,14 +19,14 @@ A real-time equity trade blotter: view, create, amend and cancel trades, with ev
 ## Architecture
 
 ```
-Browser (Next.js) --HTTP /api--> api (NestJS BFF) --RabbitMQ RPC--> service (NestJS) --> Postgres
+Browser (Next.js) --HTTP /api--> api (NestJS BFF) --RabbitMQ RPC--> trade service (NestJS) --> Postgres
        ^                                                               |
        +----- WebSocket /socket.io ----- realtime (Socket.IO) <--RabbitMQ emit commands
 ```
 
 - **web** (`frontend/`): Next.js App Router, used as a client-rendered shell. It proxies `/api` and `/socket.io`, so the browser sees one origin and the httpOnly auth cookies reach the API.
 - **api** (`backend/api/`): a pure BFF. It handles HTTP, `/api/v1` versioning, cookie auth with CSRF, and zod shape validation, and maps service replies to frontend DTOs. It has no business logic and no database.
-- **service** (`backend/service/`): all business logic. It uses Clean Architecture with CQRS and repositories, one module per business entity, and Prisma for persistence. It runs as one process for now but is structured so it can be split into separate services.
+- **trade service** (`backend/services/trade/`): all business logic. It uses Clean Architecture with CQRS and repositories, one module per business entity, and Prisma for persistence. It is the initial service under `backend/services/`. For now it also hosts audit, positions, pricing and auth, and each module is structured so it can move into its own service there.
 - **realtime** (`backend/realtime/`): holds the socket connections and topic groups, and emits only when the service tells it to. Events carry ids, never trade data, and the web refetches through the API.
 - **RabbitMQ**: every API to service call is request/reply over the queue, and the API still answers HTTP synchronously. Service to realtime emits are fire-and-forget. Apps depend only on the `MessageBus` interface in `packages/messaging`.
 
@@ -108,7 +108,7 @@ pnpm test:integration   # integration tests against real RabbitMQ (needs Docker)
 ```
 frontend/            Next.js web app
 backend/api/         NestJS BFF
-backend/service/     NestJS domain service
+backend/services/    NestJS domain services (trade is the initial one)
 backend/realtime/    NestJS + Socket.IO
 database/            Prisma schema, migrations, seed data generator
 packages/contracts/  Shared types, zod schemas, RPC catalogue, realtime events

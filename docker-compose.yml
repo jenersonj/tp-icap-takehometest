@@ -36,11 +36,11 @@ services:
       timeout: 10s
       retries: 30
 
-  service:
+  trade-service:
     build:
       context: .
       target: nest
-      args: { APP: '@blotter/service', APP_DIR: backend/service }
+      args: { APP: '@blotter/trade-service', APP_DIR: backend/services/trade }
     environment:
       <<: *rabbitmq-env
       NODE_ENV: production
@@ -49,7 +49,7 @@ services:
     command:
       - sh
       - -c
-      - cd /repo/database && pnpm exec prisma migrate deploy && cd /repo/backend/service && node dist/main.js
+      - cd /repo/database && pnpm exec prisma migrate deploy && cd /repo/backend/services/trade && node dist/main.js
     depends_on:
       postgres: { condition: service_healthy }
       rabbitmq: { condition: service_healthy }
