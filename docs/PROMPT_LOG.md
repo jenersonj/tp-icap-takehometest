@@ -1,51 +1,69 @@
 # Prompt log
 
-A representative sample of the significant prompts used to build this project, not the full conversation. Responses are summarised. How AI was used overall is in [AI_USAGE.md](./AI_USAGE.md).
+A representative sample of the prompts behind this project, in the order the work happened: understanding the brief, getting an architecture suggestion, brainstorming and pushing back on parts of it, then testing the result and asking for improvements. Responses are summarised; prompts in quotes are as written, the others are paraphrased. How AI was used overall is in [AI_USAGE.md](./AI_USAGE.md).
 
-## 1. Architecture
+---
 
-**Prompt:**
-"Frontend -> API -> queue -> Service -> DB / Realtime."
+## 1. Feeding in the brief
 
-**Outcome:**
-Claude turned the flow into C4 diagrams and sequences and offered options for the open questions, such as three ways to authenticate the socket. Jenerson chose RabbitMQ behind a `MessageBus` interface, NestJS and Socket.IO, and single-use socket tickets, and signed off [ARCHITECTURE.md](./ARCHITECTURE.md).
+The first step was to give Claude the take-home document and make sure the requirements were understood before any design.
 
-## 2. Latest versions
+**Prompt:** _(paraphrased)_ Shared the take-home PDF and asked Claude to read it and plan the build.
 
-**Prompt:**
-"Why not use the latest versions?"
+**Outcome:** Claude summarised the core requirements: create, amend and cancel trades (cancel as a status change), a sortable and filterable grid, a refresh action, live updates across clients, 100 to 1,000 seeded random trades, tests, Docker and a README. It then listed the bonus features separately. Jenerson decided to build all the bonus features too: audit trail, positions, P&L, auth, validation rules and a virtualised grid.
 
-**Outcome:**
-Claude had pinned older majors out of caution, so it upgraded everything as a spike and reran the tests and the Docker build. The upgrades were kept, except TypeScript 7, which was rejected because the linter and Nest CLI don't support it yet; the project uses TypeScript 6.
+## 2. Asking for an architecture
 
-## 3. Folder layout and UI components
+With the scope agreed, Claude was asked for options rather than a finished design.
 
-**Prompt:**
-"backend/service should be backend/services then initial service for trade should be present as initial service. Let us use shadcn with Base UI for the component factory."
+**Prompt:** _(paraphrased)_ What are the options for the backend framework and for realtime?
 
-**Outcome:**
-Claude's `backend/service` was renamed to `backend/services/trade` so more services can sit beside it. The UI uses shadcn on Base UI instead of Radix.
+**Outcome:** Claude compared Express, Fastify, Hono and NestJS, and WebSockets, Socket.IO and Server-Sent Events, with the trade-offs of each. Jenerson chose NestJS and Socket.IO.
 
-## 4. Building locally
+**Prompt:** "Frontend -> API -> queue -> Service -> DB / Realtime."
 
-**Prompt:**
-"Why are you building it on a cloud sandbox? Do it on my local, even all the build. I need to see the app realtime working and building."
+**Outcome:** Jenerson set the overall flow, and Claude turned it into C4 diagrams, request sequences, a data model and an API design. Jenerson added the rules for each part:
 
-**Outcome:**
-All building and running moved from the cloud sandbox to Jenerson's Mac. The shadcn components were regenerated with the real CLI, and its broken `cn` imports were fixed by hand.
+- The API is a pure BFF with no business logic and no database.
+- The service holds all business logic, using Clean Architecture and CQRS.
+- Realtime is a separate server rather than a gateway inside the API.
+- Events carry ids only, and the frontend refetches through the API.
 
-## 5. Commits
+## 3. Brainstorming, and where Jenerson disagreed
 
-**Prompt:**
-"Why do we need to add a commit on each change you are doing?"
+The design was refined by going through Claude's suggestions one question at a time. Most were accepted; some were replaced with a different strategy.
 
-**Outcome:**
-Claude explained that one commit per feature keeps each piece reviewable and revertable, and offered to squash or leave changes uncommitted instead. Jenerson kept one commit per feature.
+**Prompt:** _(paraphrased)_ Which message broker and library should we use?
 
-## 6. UI refinements
+**Outcome:** Claude laid out the choices. Jenerson chose RabbitMQ through NestJS's built-in transport, hidden behind a `MessageBus` interface. Claude then added an in-memory adapter so every app can be unit-tested without a broker.
 
-**Prompt:**
-"The positions table is not using AG Grid and its header is not fixed, make it behave similar to the main grid. For the trade form, use the side bar as well, similar to the audit trail."
+**Prompt:** _(Claude's suggestion)_ Three ways to authenticate the socket: (A) send the access token in the handshake, (B) use a short-lived one-time ticket, (C) share the cookie through a same-origin proxy.
 
-**Outcome:**
-Claude's plain positions table was replaced with AG Grid, using the blotter's theme, a fixed header and a pinned totals row. The trade form moved from a dialog into the same side drawer as the audit trail.
+**Outcome:** Jenerson chose B. The browser asks the API for a 30-second single-use ticket, realtime redeems it with the service, and the socket is disconnected when the session expires. Tokens never travel over the socket.
+
+**Prompt:** "Why not use the latest versions?"
+
+**Outcome:** Disagreement. Claude had pinned older major versions to be safe, and admitted that was caution, not a known incompatibility. It upgraded everything as a spike and reran the tests and Docker build. The latest NestJS, Prisma, Next.js and Node were kept. TypeScript 7 was rejected because the linter and Nest CLI don't support it yet, so the project stays on TypeScript 6.
+
+**Prompt:** "backend/service should be backend/services then initial service for trade should be present as initial service. Let us use shadcn with Base UI for the component factory."
+
+**Outcome:** Two changes to Claude's layout:
+
+- Claude's single `backend/service` folder became `backend/services/trade`, so more domain services can be added beside it later.
+- The UI uses shadcn on Base UI instead of shadcn's default, Radix.
+
+## 4. Testing it and asking for improvements
+
+Each feature was built and tested, then Jenerson used the running app and asked for changes where it fell short.
+
+**Prompt:** _(paraphrased)_ Run the whole stack locally so I can see the app working in real time.
+
+**Outcome:** Claude built and ran everything in Docker and checked it in two browsers at once: a trade created, amended and cancelled by one user appeared for the other within milliseconds. That gave Jenerson a working blotter to review.
+
+**Prompt:** "The positions table is not using AG Grid and its header is not fixed, make it behave similar to the main grid."
+
+**Outcome:** Claude's first positions panel was a plain table whose header scrolled away. It was rebuilt on AG Grid with the same theme as the trade grid, a fixed header, sortable columns, a totals row pinned to the bottom, and price and P&L cells that flash on each market tick.
+
+**Prompt:** "For the trade form, use the side bar as well, similar to the audit trail."
+
+**Outcome:** The create and amend form moved from a pop-up dialog into the same right-hand drawer as the audit trail, so trade details always open in one place. While checking this in the browser, Claude saw that the success messages covered the drawer's buttons and moved them to the other side of the screen.
