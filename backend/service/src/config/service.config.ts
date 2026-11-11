@@ -5,6 +5,8 @@ const ServiceEnvSchema = z.object({
   DATABASE_URL: z.string().url(),
   RABBITMQ_URL: z.string().min(1).default('amqp://guest:guest@localhost:5672'),
   RABBITMQ_EXCHANGE: z.string().min(1).default('blotter'),
+  /** Random trades generated on first start when the trades table is empty (0 disables). */
+  SEED_TRADE_COUNT: z.coerce.number().int().min(0).max(1000).default(500),
 });
 
 export type ServiceConfig = z.infer<typeof ServiceEnvSchema>;
