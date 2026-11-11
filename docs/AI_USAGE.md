@@ -10,21 +10,31 @@ Jenerson set the architecture and made the product decisions. Claude proposed op
 
 ## Examples of prompts
 
-- "Frontend -> API -> queue -> Service -> DB / Realtime."
+- "Can you analyze this document and prepare a plan of execution. Before doing anything let us brainstorm first."
+- "In theory I want it to work this way: Frontend -> API -> queue -> service -> DB/Socket."
+- "I never said realtime should have the response from API call, that is anti-pattern."
 - "Why not use the latest versions?"
-- "Why are you building it on a cloud sandbox? Do it on my local, even all the build."
-- "The positions table is not using AG Grid and its header is not fixed, make it behave similar to the main grid."
+- "The positions table is not using AG Grid and its header is not fixed, make it use similar behaviour as the main grid."
 
 More, with outcomes, in [PROMPT_LOG.md](./PROMPT_LOG.md).
 
 ## Key architectural or implementation decisions influenced by AI
 
-The overall flow, the pure BFF, a separate realtime server, thin events with refetch, RabbitMQ and the frameworks were Jenerson's calls. Claude proposed these, and Jenerson accepted them:
+Jenerson's calls:
 
-- **Single-use socket tickets.** This was one of three socket-auth options Claude laid out. Tokens never travel over the socket and realtime makes no permission decisions.
-- **One `MessageBus` over Nest's RabbitMQ transport.** It uses a topic exchange so each queue gets only its own patterns, and an in-memory adapter makes every app testable without a broker.
+- the overall flow, with a queue between every layer
+- the pure BFF and a separate realtime server
+- thin events with refetch, and topic groups instead of per-user emits
+- the `MessageBus` request/publish abstraction
+- NestJS, Socket.IO and Next.js
+- both tokens in httpOnly cookies, and API-issued socket tickets
+
+Claude proposed these, and Jenerson accepted them:
+
+- **RabbitMQ as the queue.** It runs over a topic exchange so each queue receives only its own patterns, with an in-memory bus adapter that makes every app testable without a broker.
 - **One error envelope with coded errors.** Only branded domain errors keep their code across the bus; anything else becomes `INTERNAL`, so internals never leak.
-- **Amend in place.** It uses optimistic `version` checks, and the audit row is written in the same transaction as the change.
+- **Amend in place with an audit table.** It uses optimistic `version` checks, and the audit row is written in the same transaction as the change.
+- **CSRF protection on every write**, added once the tokens moved into cookies.
 - **Positions with the average-cost method.** They come from one SQL `GROUP BY` per request, with realised and unrealised P&L marked to a mock price ticker.
 - **Refresh-token rotation with reuse detection.** Tokens are stored hashed, and a replayed token signs the user out everywhere.
 - **AG Grid's infinite row model**, so paging, sorting and filtering run on the server.
@@ -35,6 +45,15 @@ The overall flow, the pure BFF, a separate realtime server, thin events with ref
 
 **Rejected or changed by Jenerson:**
 
+- Claude's first stack, Fastify with native WebSockets in one backend → NestJS, with Socket.IO on its own realtime server.
+- Claude's first scope, skipping auth and P&L unless time allowed → every bonus feature.
+- Redis pub/sub between API and realtime → a queue between every layer.
+- An option to return a write's result over the socket → rejected as an anti-pattern; writes are request/reply and events stay independent.
+- Plain `amqplib` → NestJS's built-in RabbitMQ transport.
+- The access token in memory → both tokens in httpOnly cookies.
+- Claude advised against Next.js, because its server would overlap the BFF → Next.js was chosen, used as a client-rendered shell.
+- Socket auth handled on realtime (option A, Claude's recommendation) → a one-time ticket issued through the API (option B).
+- The `MessageBus` with `request()` and `publish()` was Jenerson's addition to the design.
 - Claude pinned older framework versions → upgraded to the latest.
 - `backend/service` → `backend/services/trade`, with room for more services.
 - Building in a cloud sandbox → building and running locally. The UI components, first generated without the shadcn CLI, were regenerated with the real CLI.
