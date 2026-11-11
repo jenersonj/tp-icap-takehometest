@@ -15,4 +15,9 @@ export const ListPricesQuerySchema = z.object({
     ),
 });
 export type ListPricesQuery = z.output<typeof ListPricesQuerySchema>;
-export type ListPricesRequest = ListPricesQuery;
+
+/** The RPC payload: the API has already split `?symbols=` into a list. */
+export const ListPricesRequestSchema = z.object({
+  symbols: z.array(z.string().trim().toUpperCase().min(1)).max(100).optional(),
+});
+export type ListPricesRequest = z.infer<typeof ListPricesRequestSchema>;

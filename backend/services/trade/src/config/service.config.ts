@@ -7,6 +7,8 @@ const ServiceEnvSchema = z.object({
   RABBITMQ_EXCHANGE: z.string().min(1).default('blotter'),
   /** Random trades generated on first start when the trades table is empty (0 disables). */
   SEED_TRADE_COUNT: z.coerce.number().int().min(0).max(1000).default(500),
+  /** Mock market ticker interval (0 disables it). */
+  PRICE_TICK_MS: z.coerce.number().int().min(0).max(60_000).default(2000),
 });
 
 export type ServiceConfig = z.infer<typeof ServiceEnvSchema>;

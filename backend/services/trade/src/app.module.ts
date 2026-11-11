@@ -4,6 +4,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 import { SERVICE_CONFIG, type ServiceConfig } from './config/service.config.js';
 import { AuditModule } from './modules/audit/audit.module.js';
+import { PricingModule } from './modules/pricing/pricing.module.js';
 import { SeedModule } from './modules/seed/seed.module.js';
 import { SystemModule } from './modules/system/system.module.js';
 import { TradesModule } from './modules/trades/trades.module.js';
@@ -31,6 +32,7 @@ export class AppModule {
         SystemModule,
         TradesModule,
         AuditModule,
+        PricingModule,
         SeedModule,
       ],
     };
