@@ -1,0 +1,31 @@
+# Throwaway Postgres and RabbitMQ for integration tests, on separate ports, no volumes:
+#   docker compose -f docker-compose.test.yml up -d --wait && pnpm test:integration
+# (The messaging package's integration tests start their own broker with Testcontainers.)
+name: trade-blotter-test
+
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: blotter
+      POSTGRES_PASSWORD: blotter
+      POSTGRES_DB: blotter_test
+    ports:
+      - '55432:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U blotter -d blotter_test']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  rabbitmq-test:
+    image: rabbitmq:3-management
+    ports:
+      - '55672:5672'
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'check_port_connectivity']
+      interval: 3s
+      timeout: 10s
+      retries: 30

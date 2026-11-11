@@ -11,3 +11,4 @@ coverage/
 .DS_Store
 npm-debug.log*
 pnpm-debug.log*
+next-env.d.ts
