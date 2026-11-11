@@ -8,11 +8,33 @@ export const MessagingErrorCode = {
 } as const;
 
 /**
+ * Errors carrying this brand (a global symbol, so no import is needed) cross the bus with
+ * their code and message. It lets a service's domain layer define its own error type
+ * without depending on this package.
+ */
+export const CODED_ERROR_BRAND = Symbol.for('blotter.coded-error');
+
+export interface CodedErrorLike extends Error {
+  readonly code: string;
+  readonly details?: unknown;
+}
+
+export function isCodedError(error: unknown): error is CodedErrorLike {
+  return (
+    error instanceof Error &&
+    (error as unknown as Record<symbol, unknown>)[CODED_ERROR_BRAND] === true &&
+    typeof (error as { code?: unknown }).code === 'string'
+  );
+}
+
+/**
  * Base class for errors that should cross the bus with a code. A handler throws one (or a
  * subclass such as a DomainError) and the caller receives a {@link RemoteError} with the
  * same code, message and details.
  */
 export class CodedError extends Error {
+  readonly [CODED_ERROR_BRAND] = true;
+
   constructor(
     readonly code: string,
     message: string,
@@ -60,11 +82,11 @@ export class TransportError extends CodedError {
 }
 
 /**
- * Turns anything a handler throws into a reply body. CodedErrors keep their code; anything
+ * Turns anything a handler throws into a reply body. Branded (coded) errors keep their code; anything
  * else becomes INTERNAL with a generic message so internals never leak to callers.
  */
 export function toRpcErrorBody(error: unknown): RpcErrorBody {
-  if (error instanceof CodedError) {
+  if (isCodedError(error)) {
     return error.details === undefined
       ? { code: error.code, message: error.message }
       : { code: error.code, message: error.message, details: error.details };

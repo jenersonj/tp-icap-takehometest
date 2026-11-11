@@ -112,8 +112,7 @@ const optionalFilter = z
   .optional()
   .or(z.literal('').transform(() => undefined));
 
-/** Query string of GET /api/v1/trades (values arrive as strings, hence coerce). */
-export const ListTradesQuerySchema = PageQuerySchema.extend({
+const TradeListFiltersSchema = PageQuerySchema.extend({
   status: TradeStatusSchema.optional(),
   side: SideSchema.optional(),
   symbol: optionalFilter,
@@ -122,15 +121,30 @@ export const ListTradesQuerySchema = PageQuerySchema.extend({
   counterparty: optionalFilter,
   from: IsoDateTimeSchema.optional(),
   to: IsoDateTimeSchema.optional(),
-  sort: TradeSortSchema,
-}).refine((q) => !q.from || !q.to || q.from <= q.to, {
-  message: '`from` must be before `to`',
-  path: ['from'],
 });
+
+const fromBeforeTo = (q: { from?: string | undefined; to?: string | undefined }) =>
+  !q.from || !q.to || q.from <= q.to;
+const fromBeforeToIssue = { message: '`from` must be before `to`', path: ['from'] };
+
+/** Query string of GET /api/v1/trades (values arrive as strings, hence coerce). */
+export const ListTradesQuerySchema = TradeListFiltersSchema.extend({
+  sort: TradeSortSchema,
+}).refine(fromBeforeTo, fromBeforeToIssue);
 /** What the web sends (all strings optional). */
 export type ListTradesQueryInput = z.input<typeof ListTradesQuerySchema>;
 /** What the API forwards to the service as `trade.list`. */
 export type ListTradesQuery = z.output<typeof ListTradesQuerySchema>;
+
+export const TradeSortSpecSchema = z.object({
+  field: z.enum(TRADE_SORT_FIELDS),
+  direction: z.enum(['asc', 'desc']),
+});
+
+/** The `trade.list` RPC payload as the service validates it (sort already parsed). */
+export const ListTradesRequestSchema = TradeListFiltersSchema.extend({
+  sort: TradeSortSpecSchema,
+}).refine(fromBeforeTo, fromBeforeToIssue);
 
 export const TradeIdParamSchema = z.object({ id: UuidSchema });
 
