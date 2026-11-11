@@ -1,14 +1,50 @@
 'use client';
 
-import { RealtimeGroup } from '@blotter/contracts';
+import type { TradeDto } from '@blotter/contracts';
+import { useMemo, useRef, useState } from 'react';
+
+import { AuditSheet } from '@/features/audit/audit-sheet';
+import { useCanTrade } from '@/features/auth/session';
+import { BlotterGrid, type BlotterGridHandle } from '@/features/trades/blotter-grid';
+import { CancelTradeDialog } from '@/features/trades/cancel-trade-dialog';
+import { EMPTY_FILTERS, type TradeFilters } from '@/features/trades/trade-filters';
+import { TradeFormDialog, type TradeDialogState } from '@/features/trades/trade-form-dialog';
+import { TradesToolbar } from '@/features/trades/trades-toolbar';
 
 export default function BlotterPage() {
+  const canTrade = useCanTrade();
+  const grid = useRef<BlotterGridHandle>(null);
+  const [filters, setFilters] = useState<TradeFilters>(EMPTY_FILTERS);
+  const [total, setTotal] = useState<number | null>(null);
+  const [dialog, setDialog] = useState<TradeDialogState>(null);
+  const [cancelling, setCancelling] = useState<TradeDto | null>(null);
+  const [auditOf, setAuditOf] = useState<TradeDto | null>(null);
+
+  const context = useMemo(
+    () => ({
+      canTrade,
+      onAmend: (trade: TradeDto) => setDialog({ mode: 'amend', trade }),
+      onCancel: setCancelling,
+      onAudit: setAuditOf,
+    }),
+    [canTrade],
+  );
+
   return (
-    <main className="mx-auto max-w-6xl p-6">
-      <h1 className="text-2xl font-semibold">Trade Blotter</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Skeleton page. The grid subscribes to the {Object.values(RealtimeGroup).join(', ')} groups.
-      </p>
+    <main className="flex min-h-0 flex-1 flex-col">
+      <TradesToolbar
+        filters={filters}
+        onChange={setFilters}
+        onRefresh={() => grid.current?.refresh()}
+        onNewTrade={canTrade ? () => setDialog({ mode: 'create' }) : undefined}
+        total={total}
+      />
+      <div className="min-h-0 flex-1">
+        <BlotterGrid ref={grid} filters={filters} context={context} onTotalChange={setTotal} />
+      </div>
+      <TradeFormDialog state={dialog} onClose={() => setDialog(null)} />
+      <CancelTradeDialog trade={cancelling} onClose={() => setCancelling(null)} />
+      <AuditSheet trade={auditOf} onClose={() => setAuditOf(null)} />
     </main>
   );
 }
