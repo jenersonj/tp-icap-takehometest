@@ -8,7 +8,7 @@ A real-time equity trade blotter: view, create, amend and cancel trades, with ev
 
 | Dark theme, wide monitor                                                         | Audit trail                                            | New trade                                                 |
 | -------------------------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
-| ![Blotter, dark theme on a wide monitor](docs/screenshots/blotter-wide-dark.png) | ![Audit trail drawer](docs/screenshots/audit-dark.png) | ![New trade dialog](docs/screenshots/new-trade-light.png) |
+| ![Blotter, dark theme on a wide monitor](docs/screenshots/blotter-wide-dark.png) | ![Audit trail drawer](docs/screenshots/audit-dark.png) | ![New trade drawer](docs/screenshots/new-trade-light.png) |
 
 More in [docs/screenshots](docs/screenshots).
 
