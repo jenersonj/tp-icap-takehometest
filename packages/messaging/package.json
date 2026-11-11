@@ -1,0 +1,54 @@
+{
+  "name": "@blotter/messaging",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MessageBus abstraction (request/publish/handle/subscribe) with RabbitMQ and in-memory adapters",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/in-memory/index.d.ts",
+      "default": "./dist/in-memory/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.int.config.mts"
+  },
+  "dependencies": {
+    "amqp-connection-manager": "^5.0.1",
+    "amqplib": "^0.10.9"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^11",
+    "@nestjs/core": "^11",
+    "@nestjs/microservices": "^11",
+    "reflect-metadata": "^0.2",
+    "rxjs": "^7"
+  },
+  "devDependencies": {
+    "@blotter/config": "workspace:*",
+    "@nestjs/common": "^11.1.0",
+    "@nestjs/core": "^11.1.0",
+    "@nestjs/microservices": "^11.1.0",
+    "@types/amqplib": "^0.10.7",
+    "eslint": "^9.39.5",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "testcontainers": "^11.7.1",
+    "@testcontainers/rabbitmq": "^11.7.1",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.7"
+  }
+}
