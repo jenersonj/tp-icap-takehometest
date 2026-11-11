@@ -2,7 +2,7 @@
 
 A real-time equity trade blotter: view, create, amend and cancel trades, with every change pushed live to every connected client. It is built as a TypeScript monorepo with a Next.js web app, a NestJS BFF, a NestJS domain service and a Socket.IO realtime server, talking over RabbitMQ and storing data in Postgres.
 
-> **Status:** feature complete and running end to end in Docker: trade CRUD with cancel as a status change, a server-side paged, sorted and filtered grid, live updates across clients, audit trail, positions with realised and unrealised P&L against a mock price ticker, auth with TRADER and VIEWER roles, and light and dark themes. Still to come: the service integration tests against Postgres, CI, and `docs/AI_USAGE.md`.
+> **Status:** feature complete and running end to end in Docker: trade CRUD with cancel as a status change, a server-side paged, sorted and filtered grid, live updates across clients, audit trail, positions with realised and unrealised P&L against a mock price ticker, auth with TRADER and VIEWER roles, and light and dark themes. Still to come: the service integration tests against Postgres, and CI.
 
 ![Blotter, light theme](docs/screenshots/blotter-light.png)
 
@@ -173,4 +173,4 @@ docs/                Architecture, AI usage report, prompt log
 
 ## AI usage
 
-This project was built with Claude Code. Jenerson made the architecture and product decisions, and Claude proposed options and wrote the code and tests. Sample prompts are in [docs/PROMPT_LOG.md](docs/PROMPT_LOG.md). The AI usage report will be in `docs/AI_USAGE.md`.
+This project was built with Claude Code. Jenerson made the architecture and product decisions, and Claude proposed options and wrote the code and tests. See the [AI usage report](docs/AI_USAGE.md) for the tools, how they were used and which suggestions were accepted or rejected, and the [prompt log](docs/PROMPT_LOG.md) for sample prompts and outcomes.
