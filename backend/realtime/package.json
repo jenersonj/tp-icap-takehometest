@@ -1,0 +1,44 @@
+{
+  "name": "@blotter/realtime",
+  "version": "0.0.0",
+  "private": true,
+  "description": "NestJS + Socket.IO gateway: joins topic groups and emits on service command",
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest start --watch --preserveWatchOutput",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.int.config.mts --passWithNoTests"
+  },
+  "dependencies": {
+    "@blotter/contracts": "workspace:*",
+    "@blotter/messaging": "workspace:*",
+    "@nestjs/common": "^11.1.0",
+    "@nestjs/core": "^11.1.0",
+    "@nestjs/microservices": "^11.1.0",
+    "@nestjs/platform-express": "^11.1.0",
+    "@nestjs/platform-socket.io": "^11.1.0",
+    "@nestjs/websockets": "^11.1.0",
+    "amqp-connection-manager": "^5.0.1",
+    "amqplib": "^0.10.9",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "socket.io": "^4.8.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@blotter/config": "workspace:*",
+    "@nestjs/cli": "^11.0.24",
+    "@nestjs/testing": "^11.1.0",
+    "@swc/core": "^1.16.22",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.5",
+    "eslint": "^9.39.5",
+    "socket.io-client": "^4.8.1",
+    "typescript": "~5.9.3",
+    "unplugin-swc": "^1.6.0",
+    "vitest": "^3.2.7"
+  }
+}

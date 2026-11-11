@@ -1,0 +1,10 @@
+{
+  "extends": "@blotter/config/tsconfig/nest.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "types": ["node"]
+  },
+  "include": ["src", "test", "vitest.config.mts", "vitest.int.config.mts"]
+}
