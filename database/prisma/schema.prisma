@@ -1,0 +1,119 @@
+// Data model from docs/ARCHITECTURE.md ("Prisma data model").
+// Trades are updated in place with an optimistic `version`; every change appends one
+// immutable TradeAudit row with before/after snapshots.
+
+generator client {
+  provider      = "prisma-client-js"
+  // native for local dev, musl variants for the node:22-alpine images (x64 and Apple Silicon)
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Side {
+  BUY
+  SELL
+}
+
+enum TradeStatus {
+  ACTIVE
+  CANCELLED
+}
+
+enum AuditAction {
+  CREATED
+  AMENDED
+  CANCELLED
+}
+
+enum Role {
+  TRADER
+  VIEWER
+}
+
+model Trade {
+  id             String       @id @default(uuid()) @db.Uuid
+  tradeRef       String       @unique // "TRD-100001"
+  symbol         String
+  side           Side
+  quantity       Int
+  price          Decimal      @db.Decimal(18, 6)
+  trader         String // trader code, e.g. JSMITH
+  book           String
+  counterparty   String
+  tradeTimestamp DateTime     @db.Timestamptz(3)
+  status         TradeStatus  @default(ACTIVE)
+  version        Int          @default(1)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
+  createdById    String?      @db.Uuid
+  audits         TradeAudit[]
+
+  @@index([status, tradeTimestamp])
+  @@index([book, symbol])
+  @@index([trader])
+  @@map("trades")
+}
+
+model TradeAudit {
+  id      String      @id @default(uuid()) @db.Uuid
+  tradeId String      @db.Uuid
+  trade   Trade       @relation(fields: [tradeId], references: [id])
+  action  AuditAction
+  version Int // trade version after the change
+  before  Json?
+  after   Json
+  changed String[] // field names that changed
+  actorId String
+  reason  String?
+  at      DateTime    @default(now()) @db.Timestamptz(3)
+
+  @@index([tradeId, at])
+  @@map("trade_audits")
+}
+
+model Price {
+  symbol String   @id
+  price  Decimal  @db.Decimal(18, 6)
+  asOf   DateTime @db.Timestamptz(3)
+
+  @@map("prices")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  username     String   @unique
+  passwordHash String
+  traderCode   String   @unique
+  role         Role     @default(TRADER)
+  books        String[] // books the user may trade
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  @@map("users")
+}
+
+model SocketTicket {
+  id               String    @id // SHA-256 of a random 256-bit ticket; the raw value is never stored
+  userId           String    @db.Uuid
+  allowedGroups    String[]
+  expiresAt        DateTime  @db.Timestamptz(3) // issue time + 30 s
+  sessionExpiresAt DateTime  @db.Timestamptz(3) // access token expiry
+  usedAt           DateTime? @db.Timestamptz(3)
+
+  @@index([expiresAt])
+  @@map("socket_tickets")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
