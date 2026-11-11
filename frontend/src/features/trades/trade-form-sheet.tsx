@@ -8,19 +8,13 @@ import { Controller, useForm, type FieldPath } from 'react-hook-form';
 
 import { useCurrentUser } from '@/features/auth/session';
 import { errorMessage, isApiError } from '@/shared/api/api-error';
+import { SideDrawerBody, SideDrawerContent } from '@/shared/components/side-drawer';
 import { cn } from '@/shared/lib/utils';
 import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/ui/dialog';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/shared/ui/field';
 import { Input } from '@/shared/ui/input';
+import { Sheet, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/shared/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Spinner } from '@/shared/ui/spinner';
 import { ToggleGroup, ToggleGroupItem } from '@/shared/ui/toggle-group';
@@ -38,8 +32,11 @@ import { useAmendTrade, useCreateTrade } from './use-trade-mutations';
 
 export type TradeDialogState = { mode: 'create' } | { mode: 'amend'; trade: TradeDto } | null;
 
-/** Create or amend a trade. Amend sends only changed fields plus the version it started from. */
-export function TradeFormDialog({
+/**
+ * Create or amend a trade in the right-hand drawer (same as the audit trail). Amend sends
+ * only the changed fields plus the version it started from.
+ */
+export function TradeFormSheet({
   state,
   onClose,
 }: {
@@ -47,8 +44,8 @@ export function TradeFormDialog({
   onClose: () => void;
 }) {
   return (
-    <Dialog open={state !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+    <Sheet open={state !== null} onOpenChange={(open) => !open && onClose()}>
+      <SideDrawerContent>
         {state && (
           <TradeForm
             key={state.mode === 'amend' ? state.trade.id : 'create'}
@@ -56,8 +53,8 @@ export function TradeFormDialog({
             onDone={onClose}
           />
         )}
-      </DialogContent>
-    </Dialog>
+      </SideDrawerContent>
+    </Sheet>
   );
 }
 
@@ -137,127 +134,133 @@ export function TradeForm({ initial, onDone }: { initial?: TradeDto; onDone: () 
     trade && !user.books.includes(trade.book) ? [trade.book, ...user.books] : user.books;
 
   return (
-    <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <DialogHeader>
-        <DialogTitle>{trade ? `Amend ${trade.tradeRef}` : 'New trade'}</DialogTitle>
-        <DialogDescription>
+    <form
+      noValidate
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="flex min-h-0 flex-1 flex-col"
+    >
+      <SheetHeader>
+        <SheetTitle>{trade ? `Amend ${trade.tradeRef}` : 'New trade'}</SheetTitle>
+        <SheetDescription>
           {trade
             ? `Version ${trade.version}. Only changed fields are sent.`
             : 'Book a new equity trade. Leave the trade time empty to use now.'}
-        </DialogDescription>
-      </DialogHeader>
+        </SheetDescription>
+      </SheetHeader>
 
-      {conflict && (
-        <Alert variant="destructive">
-          <AlertTriangleIcon />
-          <AlertTitle>This trade was changed by someone else</AlertTitle>
-          <AlertDescription>
-            Reload it to see the latest version, then amend again.
-          </AlertDescription>
-          <AlertAction>
-            <Button type="button" size="sm" variant="outline" onClick={() => void reload()}>
-              <RefreshCwIcon /> Reload
-            </Button>
-          </AlertAction>
-        </Alert>
-      )}
-      {errors.root && !conflict && (
-        <Alert variant="destructive">
-          <AlertTriangleIcon />
-          <AlertDescription>{errors.root.message}</AlertDescription>
-        </Alert>
-      )}
+      <SideDrawerBody className="flex flex-col gap-4">
+        {conflict && (
+          <Alert variant="destructive">
+            <AlertTriangleIcon />
+            <AlertTitle>This trade was changed by someone else</AlertTitle>
+            <AlertDescription>
+              Reload it to see the latest version, then amend again.
+            </AlertDescription>
+            <AlertAction>
+              <Button type="button" size="sm" variant="outline" onClick={() => void reload()}>
+                <RefreshCwIcon /> Reload
+              </Button>
+            </AlertAction>
+          </Alert>
+        )}
+        {errors.root && !conflict && (
+          <Alert variant="destructive">
+            <AlertTriangleIcon />
+            <AlertDescription>{errors.root.message}</AlertDescription>
+          </Alert>
+        )}
 
-      <FieldGroup className="grid grid-cols-2 gap-3">
-        <Field data-invalid={Boolean(errors.side)} className="col-span-2">
-          <FieldLabel>Side</FieldLabel>
-          <Controller
-            control={form.control}
-            name="side"
-            render={({ field }) => (
-              <ToggleGroup
-                value={[field.value]}
-                onValueChange={(v: string[]) => v[0] && field.onChange(v[0])}
-                variant="outline"
-                className="w-full"
-              >
-                <ToggleGroupItem
-                  value="BUY"
-                  className="flex-1 data-[pressed]:bg-buy data-[pressed]:text-white"
+        <FieldGroup className="grid grid-cols-2 gap-3">
+          <Field data-invalid={Boolean(errors.side)} className="col-span-2">
+            <FieldLabel>Side</FieldLabel>
+            <Controller
+              control={form.control}
+              name="side"
+              render={({ field }) => (
+                <ToggleGroup
+                  value={[field.value]}
+                  onValueChange={(v: string[]) => v[0] && field.onChange(v[0])}
+                  variant="outline"
+                  className="w-full"
                 >
-                  Buy
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="SELL"
-                  className="flex-1 data-[pressed]:bg-sell data-[pressed]:text-white"
-                >
-                  Sell
-                </ToggleGroupItem>
-              </ToggleGroup>
-            )}
-          />
-        </Field>
+                  <ToggleGroupItem
+                    value="BUY"
+                    className="flex-1 data-[pressed]:bg-buy data-[pressed]:text-white"
+                  >
+                    Buy
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="SELL"
+                    className="flex-1 data-[pressed]:bg-sell data-[pressed]:text-white"
+                  >
+                    Sell
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              )}
+            />
+          </Field>
 
-        <SelectField form={form} name="symbol" label="Symbol" options={SYMBOLS} />
-        <Field data-invalid={Boolean(errors.quantity)}>
-          <FieldLabel htmlFor="quantity">Quantity</FieldLabel>
-          <Input
-            id="quantity"
-            type="number"
-            inputMode="numeric"
-            min={1}
-            step={1}
-            className="tabular-nums"
-            aria-invalid={Boolean(errors.quantity)}
-            {...form.register('quantity', { valueAsNumber: true })}
+          <SelectField form={form} name="symbol" label="Symbol" options={SYMBOLS} />
+          <Field data-invalid={Boolean(errors.quantity)}>
+            <FieldLabel htmlFor="quantity">Quantity</FieldLabel>
+            <Input
+              id="quantity"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              step={1}
+              className="tabular-nums"
+              aria-invalid={Boolean(errors.quantity)}
+              {...form.register('quantity', { valueAsNumber: true })}
+            />
+            <FieldError errors={[errors.quantity]} />
+          </Field>
+          <Field data-invalid={Boolean(errors.price)}>
+            <FieldLabel htmlFor="price">Price</FieldLabel>
+            <Input
+              id="price"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="any"
+              className="tabular-nums"
+              aria-invalid={Boolean(errors.price)}
+              {...form.register('price', { valueAsNumber: true })}
+            />
+            <FieldError errors={[errors.price]} />
+          </Field>
+          <Field data-invalid={Boolean(errors.trader)}>
+            <FieldLabel htmlFor="trader">Trader</FieldLabel>
+            <Input
+              id="trader"
+              className="uppercase"
+              aria-invalid={Boolean(errors.trader)}
+              {...form.register('trader')}
+            />
+            <FieldError errors={[errors.trader]} />
+          </Field>
+          <SelectField form={form} name="book" label="Book" options={books} />
+          <SelectField
+            form={form}
+            name="counterparty"
+            label="Counterparty"
+            options={COUNTERPARTIES}
           />
-          <FieldError errors={[errors.quantity]} />
-        </Field>
-        <Field data-invalid={Boolean(errors.price)}>
-          <FieldLabel htmlFor="price">Price</FieldLabel>
-          <Input
-            id="price"
-            type="number"
-            inputMode="decimal"
-            min={0}
-            step="any"
-            className="tabular-nums"
-            aria-invalid={Boolean(errors.price)}
-            {...form.register('price', { valueAsNumber: true })}
-          />
-          <FieldError errors={[errors.price]} />
-        </Field>
-        <Field data-invalid={Boolean(errors.trader)}>
-          <FieldLabel htmlFor="trader">Trader</FieldLabel>
-          <Input
-            id="trader"
-            className="uppercase"
-            aria-invalid={Boolean(errors.trader)}
-            {...form.register('trader')}
-          />
-          <FieldError errors={[errors.trader]} />
-        </Field>
-        <SelectField form={form} name="book" label="Book" options={books} />
-        <SelectField
-          form={form}
-          name="counterparty"
-          label="Counterparty"
-          options={COUNTERPARTIES}
-        />
-        <Field data-invalid={Boolean(errors.tradeTimestamp)} className="col-span-2">
-          <FieldLabel htmlFor="tradeTimestamp">Trade time</FieldLabel>
-          <Input
-            id="tradeTimestamp"
-            type="datetime-local"
-            step={1}
-            aria-invalid={Boolean(errors.tradeTimestamp)}
-            {...form.register('tradeTimestamp')}
-          />
-          <FieldError errors={[errors.tradeTimestamp]} />
-        </Field>
-      </FieldGroup>
+          <Field data-invalid={Boolean(errors.tradeTimestamp)} className="col-span-2">
+            <FieldLabel htmlFor="tradeTimestamp">Trade time</FieldLabel>
+            <Input
+              id="tradeTimestamp"
+              type="datetime-local"
+              step={1}
+              aria-invalid={Boolean(errors.tradeTimestamp)}
+              {...form.register('tradeTimestamp')}
+            />
+            <FieldError errors={[errors.tradeTimestamp]} />
+          </Field>
+        </FieldGroup>
+      </SideDrawerBody>
 
-      <DialogFooter>
+      <SheetFooter className="flex-row justify-end border-t">
         <Button type="button" variant="outline" onClick={onDone}>
           Close
         </Button>
@@ -265,7 +268,7 @@ export function TradeForm({ initial, onDone }: { initial?: TradeDto; onDone: () 
           {pending && <Spinner />}
           {trade ? 'Amend trade' : 'Book trade'}
         </Button>
-      </DialogFooter>
+      </SheetFooter>
     </form>
   );
 }

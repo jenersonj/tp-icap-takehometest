@@ -4,11 +4,12 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SessionProvider } from '@/features/auth/session';
-import { Dialog, DialogContent } from '@/shared/ui/dialog';
+import { SideDrawerContent } from '@/shared/components/side-drawer';
+import { Sheet } from '@/shared/ui/sheet';
 import { json, renderWithProviders } from '@/test/render';
 
 import { toPage, toSortParam } from './blotter-grid';
-import { TradeForm } from './trade-form-dialog';
+import { TradeForm } from './trade-form-sheet';
 import { diffChanges, formDefaults, TradeFormSchema } from './trade-form-schema';
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
@@ -51,11 +52,11 @@ afterEach(() => vi.unstubAllGlobals());
 function renderForm(initial?: TradeDto, onDone = vi.fn()) {
   renderWithProviders(
     <SessionProvider value={session}>
-      <Dialog open>
-        <DialogContent>
+      <Sheet open>
+        <SideDrawerContent>
           <TradeForm initial={initial} onDone={onDone} />
-        </DialogContent>
-      </Dialog>
+        </SideDrawerContent>
+      </Sheet>
     </SessionProvider>,
   );
   return onDone;

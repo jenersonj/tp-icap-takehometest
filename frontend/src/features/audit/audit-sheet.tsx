@@ -11,7 +11,8 @@ import { formatDateTime } from '@/shared/lib/format';
 import { cn } from '@/shared/lib/utils';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/shared/ui/sheet';
+import { SideDrawerBody, SideDrawerContent } from '@/shared/components/side-drawer';
+import { Sheet, SheetDescription, SheetHeader, SheetTitle } from '@/shared/ui/sheet';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 const ACTION_STYLE: Record<AuditEntryDto['action'], string> = {
@@ -81,14 +82,14 @@ export function AuditSheet({ trade, onClose }: { trade: TradeDto | null; onClose
   });
   return (
     <Sheet open={trade !== null} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-md">
+      <SideDrawerContent>
         <SheetHeader>
           <SheetTitle>Audit trail · {trade?.tradeRef}</SheetTitle>
           <SheetDescription>
             {trade && `${trade.side} ${trade.symbol} in ${trade.book}. Every change, newest first.`}
           </SheetDescription>
         </SheetHeader>
-        <div className="px-4 pb-4">
+        <SideDrawerBody>
           {audit.isPending && (
             <div className="flex flex-col gap-3">
               <Skeleton className="h-24" />
@@ -101,8 +102,8 @@ export function AuditSheet({ trade, onClose }: { trade: TradeDto | null; onClose
             </Alert>
           )}
           {audit.data && <AuditTrail entries={audit.data} />}
-        </div>
-      </SheetContent>
+        </SideDrawerBody>
+      </SideDrawerContent>
     </Sheet>
   );
 }

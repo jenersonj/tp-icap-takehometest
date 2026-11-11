@@ -9,7 +9,7 @@ import { PositionsPanel } from '@/features/positions/positions-panel';
 import { BlotterGrid, type BlotterGridHandle } from '@/features/trades/blotter-grid';
 import { CancelTradeDialog } from '@/features/trades/cancel-trade-dialog';
 import { EMPTY_FILTERS, type TradeFilters } from '@/features/trades/trade-filters';
-import { TradeFormDialog, type TradeDialogState } from '@/features/trades/trade-form-dialog';
+import { TradeFormSheet, type TradeDialogState } from '@/features/trades/trade-form-sheet';
 import { TradesToolbar } from '@/features/trades/trades-toolbar';
 
 export default function BlotterPage() {
@@ -45,8 +45,8 @@ export default function BlotterPage() {
           <BlotterGrid ref={grid} filters={filters} context={context} onTotalChange={setTotal} />
         </div>
       </section>
-      <PositionsPanel className="h-64 shrink-0 border-t min-[1700px]:h-auto min-[1700px]:w-[520px] min-[1700px]:border-t-0 min-[1700px]:border-l" />
-      <TradeFormDialog state={dialog} onClose={() => setDialog(null)} />
+      <PositionsPanel className="h-64 shrink-0 border-t min-[1700px]:h-auto min-[1700px]:w-[560px] min-[1700px]:border-t-0 min-[1700px]:border-l" />
+      <TradeFormSheet state={dialog} onClose={() => setDialog(null)} />
       <CancelTradeDialog trade={cancelling} onClose={() => setCancelling(null)} />
       <AuditSheet trade={auditOf} onClose={() => setAuditOf(null)} />
     </main>
