@@ -24,7 +24,7 @@ Browser (Next.js) --HTTP /api--> api (NestJS BFF) --RabbitMQ RPC--> trade servic
        +----- WebSocket /socket.io ----- realtime (Socket.IO) <--RabbitMQ emit commands
 ```
 
-- **web** (`frontend/`): Next.js App Router, used as a client-rendered shell. It proxies `/api` and `/socket.io`, so the browser sees one origin and the httpOnly auth cookies reach the API.
+- **web** (`frontend/`): Next.js App Router, used as a client-rendered shell. It proxies `/api` and `/socket.io`, so the browser sees one origin and the httpOnly auth cookies reach the API. UI components are shadcn (base-nova style) on Base UI, in `frontend/src/shared/ui`; add more with `pnpm dlx shadcn@latest add <name>` from `frontend/`.
 - **api** (`backend/api/`): a pure BFF. It handles HTTP, `/api/v1` versioning, cookie auth with CSRF, and zod shape validation, and maps service replies to frontend DTOs. It has no business logic and no database.
 - **trade service** (`backend/services/trade/`): all business logic. It uses Clean Architecture with CQRS and repositories, one module per business entity, and Prisma for persistence. It is the initial service under `backend/services/`. For now it also hosts audit, positions, pricing and auth, and each module is structured so it can move into its own service there.
 - **realtime** (`backend/realtime/`): holds the socket connections and topic groups, and emits only when the service tells it to. Events carry ids, never trade data, and the web refetches through the API.
@@ -106,7 +106,7 @@ pnpm test:integration   # integration tests against real RabbitMQ (needs Docker)
 ## Project layout
 
 ```
-frontend/            Next.js web app
+frontend/            Next.js web app (shadcn on Base UI in src/shared/ui)
 backend/api/         NestJS BFF
 backend/services/    NestJS domain services (trade is the initial one)
 backend/realtime/    NestJS + Socket.IO

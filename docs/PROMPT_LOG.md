@@ -87,3 +87,13 @@ Implementation choices Claude made within the decisions, for Jenerson to review:
 - **Prisma 7.10** (the newest stable; npm's `latest` tag points at an 8.0 release candidate). It uses the new `prisma-client` generator, `prisma.config.ts`, and the `pg` driver adapter. With no query-engine binary, the Docker image no longer needs OpenSSL or `binaryTargets`.
 - Vitest 5, ESLint 10, React 19.3, Next 16.4 and Testcontainers 12 upgraded without code changes.
 - Runtime is **Node 24 LTS** (`node:24-alpine`), with `@types/node` 24 to match the runtime rather than the newest typings.
+
+## 10. Skeleton corrections: services folder and shadcn on Base UI
+
+**Prompt (Jenerson):** "backend/service should be backend/services then initial service for trade should be present as initial service. Let us use shadcn with Base UI for the component factory."
+
+**Outcome:**
+
+- The domain service moved to `backend/services/trade` (package `@blotter/trade-service`, queue `blotter.trade-service.rpc`, compose service `trade-service`). It still hosts audit, positions, pricing and auth, each as its own module, so any of them can later move into a sibling folder under `backend/services/`.
+- The frontend now uses shadcn's **base-nova** style on **Base UI** (`components.json` with `"style": "base-nova"`). Components live in `frontend/src/shared/ui`, `cn` in `src/shared/lib/utils.ts`, and the neutral theme with light and dark tokens in `globals.css`, plus `--buy`/`--sell` colours for the blotter. A `Providers` component adds next-themes, the tooltip provider and the sonner toaster.
+- The shadcn registry (ui.shadcn.com) could not be reached from the build sandbox, so Claude generated the components from the shadcn source repository with the same transforms the CLI uses (`createStyleMap`/`transformStyle` from `shadcn/utils`, lucide icons). The output matches what `npx shadcn add` produces for this style, and `components.json` lets later components be added with the CLI as normal.
