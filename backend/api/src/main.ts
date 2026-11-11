@@ -1,11 +1,18 @@
 import 'reflect-metadata';
 
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { Logger, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module.js';
 import { loadApiConfig } from './config/api.config.js';
+
+// Local dev convenience: pick up the repo-root .env when present (Docker passes real env vars).
+const rootEnv = resolve(process.cwd(), '../../.env');
+if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
 
 async function bootstrap(): Promise<void> {
   const config = loadApiConfig();

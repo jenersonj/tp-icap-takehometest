@@ -1,5 +1,8 @@
 import 'reflect-metadata';
 
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { Queues } from '@blotter/contracts';
 import { RmqMessageBus, nestDispatchLogger } from '@blotter/messaging';
 import { Logger } from '@nestjs/common';
@@ -7,6 +10,10 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module.js';
 import { loadRealtimeConfig } from './config/realtime.config.js';
+
+// Local dev convenience: pick up the repo-root .env when present (Docker passes real env vars).
+const rootEnv = resolve(process.cwd(), '../../.env');
+if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
 
 async function bootstrap(): Promise<void> {
   const config = loadRealtimeConfig();
