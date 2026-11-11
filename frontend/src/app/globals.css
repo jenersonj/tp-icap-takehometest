@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-buy: oklch(0.65 0.15 155);
+  --color-sell: oklch(0.6 0.2 25);
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  @apply bg-neutral-50 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100;
+}

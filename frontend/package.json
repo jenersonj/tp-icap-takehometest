@@ -1,0 +1,32 @@
+{
+  "name": "@blotter/frontend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Next.js (App Router) client-rendered shell for the trade blotter",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --port 8080",
+    "start": "next start --port 8080",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@blotter/contracts": "workspace:*",
+    "next": "^16.4.6",
+    "react": "^19.1.10",
+    "react-dom": "^19.1.10"
+  },
+  "devDependencies": {
+    "@blotter/config": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "globals": "^16.5.0",
+    "tailwindcss": "^4.3.5",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.7"
+  }
+}
