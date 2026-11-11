@@ -1,15 +1,16 @@
 import type { MessageBus, MessageContext, PublishOptions, RequestOptions } from './message-bus';
 
 /** A catalogue of request/reply patterns, e.g. `RpcMap` from @blotter/contracts. */
-export type RpcCatalogue = Record<string, { request: unknown; response: unknown }>;
-/** A catalogue of fire-and-forget topics and their payloads. */
-export type TopicCatalogue = Record<string, unknown>;
+export type RpcCatalogue<R> = { [K in keyof R]: { request: unknown; response: unknown } };
 
 /**
  * Type-safe view over a {@link MessageBus}: the pattern picks the request and reply types,
  * so `bus.request('trade.get', { id })` is checked end to end at compile time.
  */
-export class TypedMessageBus<R extends RpcCatalogue, T extends TopicCatalogue = TopicCatalogue> {
+export class TypedMessageBus<
+  R extends RpcCatalogue<R>,
+  T extends object = Record<string, unknown>,
+> {
   constructor(readonly bus: MessageBus) {}
 
   request<P extends keyof R & string>(

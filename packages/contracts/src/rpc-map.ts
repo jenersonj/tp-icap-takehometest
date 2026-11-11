@@ -20,6 +20,7 @@ import type { PositionRecord } from './positions/position.response';
 import type { PricePatterns } from './prices/patterns';
 import type { ListPricesRequest } from './prices/price.request';
 import type { PriceRecord } from './prices/price.response';
+import type { PingResponse, SystemPatterns } from './system';
 import type { TradePatterns } from './trades/patterns';
 import type {
   AmendTradeRequest,
@@ -36,6 +37,7 @@ import type { TradePage, TradeRecord } from './trades/trade.response';
  * payload or misread the reply.
  */
 export interface RpcMap {
+  [SystemPatterns.PING]: { request: Record<string, never>; response: PingResponse };
   [TradePatterns.LIST]: { request: ListTradesRequest; response: TradePage };
   [TradePatterns.GET]: { request: GetTradeRequest; response: TradeRecord };
   [TradePatterns.CREATE]: { request: CreateTradeRequest; response: TradeRecord };

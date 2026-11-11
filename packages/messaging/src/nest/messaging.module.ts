@@ -10,10 +10,8 @@ import {
 import { MESSAGE_BUS, type MessageBus } from '../core/message-bus';
 import { RmqMessageBus, type RmqMessageBusOptions } from '../rmq/rmq-message-bus';
 
-export interface MessagingModuleOptions extends Omit<RmqMessageBusOptions, 'logger'> {
-  /** Supply a ready bus instead (e.g. InMemoryMessageBus in tests). */
-  bus?: MessageBus;
-}
+/** Either RabbitMQ settings, or a ready bus (the app's own RmqMessageBus, or InMemoryMessageBus in tests). */
+export type MessagingModuleOptions = Omit<RmqMessageBusOptions, 'logger'> | { bus: MessageBus };
 
 @Injectable()
 class MessageBusShutdown implements OnApplicationShutdown {
@@ -33,11 +31,12 @@ export class MessagingModule {
   static forRoot(options: MessagingModuleOptions): DynamicModule {
     const logger = new Logger('MessageBus');
     const bus =
-      options.bus ??
-      new RmqMessageBus({
-        ...options,
-        logger: { error: (message, meta) => logger.error(message, meta) },
-      });
+      'bus' in options
+        ? options.bus
+        : new RmqMessageBus({
+            ...options,
+            logger: { error: (message, meta) => logger.error(message, meta) },
+          });
     return {
       module: MessagingModule,
       global: true,

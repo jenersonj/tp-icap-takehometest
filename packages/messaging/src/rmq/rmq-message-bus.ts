@@ -185,3 +185,10 @@ export class RmqMessageBus implements MessageBus {
     };
   }
 }
+
+/** Logger adapter so dispatch failures go through Nest's Logger. */
+export function nestDispatchLogger(logger: {
+  error(message: string, ...rest: unknown[]): void;
+}): DispatchLogger {
+  return { error: (message, meta) => logger.error(message, meta) };
+}
