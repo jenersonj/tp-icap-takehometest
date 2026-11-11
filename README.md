@@ -173,4 +173,4 @@ docs/                Architecture, AI usage report, prompt log
 
 ## AI usage
 
-This project was built with Claude Code. Jenerson made the architecture and product decisions, and Claude proposed options and wrote the code and tests. See [docs/PROMPT_LOG.md](docs/PROMPT_LOG.md). The AI usage report will be in `docs/AI_USAGE.md`.
+This project was built with Claude Code. Jenerson made the architecture and product decisions, and Claude proposed options and wrote the code and tests. Sample prompts are in [docs/PROMPT_LOG.md](docs/PROMPT_LOG.md). The AI usage report will be in `docs/AI_USAGE.md`.

@@ -1,109 +1,43 @@
 # Prompt log
 
-A representative sample of the prompts and discussions behind this project, as the brief asks. The working model throughout: **Jenerson made the architecture and product decisions; Claude (Claude Code) proposed options, wrote the code and tests, and flagged trade-offs.** Responses are summarised.
+Representative samples of how this project was built with Claude Code, not the full conversation. Jenerson made the architecture and product decisions; Claude proposed options, wrote the code and tests, and pointed out trade-offs.
 
-Tool: Claude Code (Anthropic), used in a project chat with a coordinator thread for design and separate build threads for implementation.
+The design that came out of these conversations is in [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ---
 
-## 1. Reading the brief
+## 1. Architecture
 
-**Prompt (Jenerson):** Shared the take-home PDF and asked for a plan to build it.
+**Jenerson:** "Frontend -> API -> queue -> Service -> DB / Realtime."
 
-**Outcome:** Claude summarised the core requirements (CRUD with cancel as a status change, sortable and filterable grid, refresh, live updates across clients, seeded random trades, tests, Docker, README, AI report and prompt log) and listed the bonus features. Jenerson decided to implement **all** bonus features (audit trail, positions, P&L, auth, validation rules, virtualised grid, Docker) and to deliver a Git repository.
+Jenerson set the topology and the rules for each part: the API is a pure BFF with no business logic or database, the service holds all the logic with Clean Architecture and CQRS, and realtime only emits when the service tells it to, with ids only so the web refetches. Claude turned it into C4 diagrams and sequences and put options to Jenerson for the open questions, such as three ways to authenticate the socket. Jenerson chose RabbitMQ behind a `MessageBus` interface, NestJS and Socket.IO, and single-use socket tickets, then signed the design off.
 
-## 2. Backend framework and realtime transport
+## 2. Latest versions
 
-**Prompt (Jenerson):** Asked for backend and realtime options.
+**Jenerson:** "Why not use the latest versions?"
 
-**Outcome:** Claude compared Express, Fastify, Hono and NestJS, and WebSockets, Socket.IO and SSE. Jenerson chose **NestJS** and **Socket.IO**, and decided realtime should be a **separate server** rather than a gateway inside the API.
+Claude admitted the pinned versions were caution, not a known incompatibility, and offered to upgrade everything, rerun the tests and Docker build, and keep back only what broke. Jenerson chose to upgrade. NestJS 12, Prisma 7, Vitest 5, Next 16 and Node 24 all worked; TypeScript 7 did not, because the linter and Nest CLI don't support it yet, so the project uses TypeScript 6.
 
-## 3. Overall flow
+## 3. Folder layout and UI components
 
-**Prompt (Jenerson):** "Frontend -> API -> queue -> Service -> DB / Realtime."
+**Jenerson:** "backend/service should be backend/services then initial service for trade should be present as initial service. Let us use shadcn with Base UI for the component factory."
 
-**Outcome:** Jenerson set the topology. Claude turned it into C4 context and container diagrams. Jenerson's rules for each part:
+Claude moved the domain service to `backend/services/trade`, so later services can sit beside it, and set up shadcn on Base UI with light and dark themes and buy/sell colours.
 
-- API is a pure BFF: no business logic, no DB, no realtime; it trims service results into frontend DTOs and uses versioned endpoints.
-- The service holds all business logic, using Clean Architecture, CQRS and the repository pattern, organised by business entity, starting as one process that can be split later.
-- Realtime only emits when the service tells it to. Events carry a type and minimal non-sensitive data, and the frontend refetches through the API. Socket.IO sits behind an interface exposing `emitToClient`, `emitToGroup` and `broadcast`, with topic groups only.
+## 4. Building locally
 
-## 4. Queue
+**Jenerson:** "Why are you building it on a cloud sandbox? Do it on my local, even all the build. I need to see the app realtime working and building."
 
-**Prompt (Jenerson):** Asked which broker and library.
+Claude moved all building and running to Jenerson's Mac. The shadcn CLI broke the `cn` imports and added an unrelated npm package, which Claude fixed before committing. Port 5432 was taken by another project's Postgres, so instead of stopping it Claude made the host port configurable, and Jenerson runs the stack on 5433.
 
-**Outcome:** Jenerson chose **RabbitMQ via NestJS's built-in transport**, abstracted behind a `MessageBus` interface with `request()` and `publish()`. All API -> service traffic goes over the queue and the API still answers HTTP synchronously; service -> realtime emits go over RabbitMQ as well.
+## 5. Commits
 
-## 5. Socket authentication
+**Jenerson:** "Why do we need to add a commit on each change you are doing?"
 
-**Prompt (Claude):** Offered three options: (A) send the access token in the socket handshake, (B) a short-lived one-time ticket, (C) share the cookie through a same-origin proxy.
+Claude explained that one commit per feature makes each piece reviewable and revertable on its own, and offered three options: keep that, squash, or leave changes uncommitted for Jenerson to commit. Jenerson answered "ok" and kept one commit per feature.
 
-**Outcome:** Jenerson chose **option B**. The client calls `POST /api/v1/realtime/ticket`, the API gets a 30 s single-use ticket from the service, and realtime redeems it with the service and disconnects the socket when the session expires.
+## 6. UI refinements
 
-## 6. Tokens, validation, data and frontend
+**Jenerson:** "The positions table is not using AG Grid and its header is not fixed, make it behave similar to the main grid. For the trade form, use the side bar as well, similar to the audit trail."
 
-**Outcome (Jenerson's decisions):**
-
-- Access and refresh tokens **both in httpOnly cookies**, with double-submit CSRF protection.
-- **Zod** schemas shared between API shape validation and web forms; business rules stay in the service domain.
-- A shared TypeScript package for contracts, types and events.
-- Next.js (App Router) as a client-rendered shell only, proxying `/api` and `/socket.io`, so the NestJS API stays the only BFF. Feature-based folders, shadcn + Tailwind on **Base UI (not Radix)**.
-- Events are emitted after the DB commit, without an outbox (clients refetch on reconnect).
-- Server-side paging, sorting and filtering for the grid.
-- Mock market price ticker in the service for P&L; positions computed per request.
-- Amend: every business field is amendable, updated in place with audit rows. Cancel is final. Auth uses roles only (TRADER / VIEWER).
-- Tooling: pnpm + Turborepo + Vitest, with folders named as the brief lists them.
-
-The full design is in [ARCHITECTURE.md](./ARCHITECTURE.md), which Jenerson signed off on 2026-11-11.
-
-## 7. Delivery
-
-**Prompt (Jenerson):** "Do not push any changes, create a local repository for now and I will push it myself."
-
-**Outcome:** Claude works in a local git repository only and copies it, with its history, to a folder on Jenerson's machine. Nothing is pushed.
-
-## 8. Building the shared packages
-
-**Prompt (Jenerson, via the signed-off doc):** Start with the monorepo skeleton, then contracts and the MessageBus.
-
-**Outcome:** Claude built:
-
-- `packages/contracts`: zod request schemas (shape only), service response records, frontend DTOs, the RPC catalogue (`RpcMap`, pattern -> request/reply types), the realtime event catalogue and error codes with their HTTP mapping.
-- `packages/messaging`: the `MessageBus` interface with a RabbitMQ adapter on Nest's `ClientRMQ`/`ServerRMQ` (a topic exchange with `wildcards: true`, so each queue receives only the patterns it registered), an in-memory adapter for unit tests, a typed wrapper, correlation-id propagation and `@RpcRoute` decorators for Nest controllers.
-
-Implementation choices Claude made within the decisions, for Jenerson to review:
-
-- Only errors that extend `CodedError` cross the bus with their code; anything else becomes `INTERNAL`. A test caught that Node system errors such as `ECONNREFUSED` would otherwise have leaked through.
-- Tooling versions were first pinned to proven majors (NestJS 11, Prisma 6, TypeScript 5.9); see the next entry.
-
-## 9. Latest versions
-
-**Prompt (Jenerson):** "Why not use the latest versions?"
-
-**Outcome:** Claude admitted the pinning was caution rather than a verified incompatibility, and offered a spike: upgrade everything, rerun the tests and the Docker build, and keep anything that fails at its current version. Jenerson chose to upgrade. The results:
-
-- **TypeScript 7 was rejected; TypeScript 6.0 is used instead.** TS 7 (the Go-native compiler) does emit decorator metadata, but it has no stable JS API yet. typescript-eslint supports up to `<6.1` and Nest CLI 12 bundles TS 6.0.
-- **NestJS 12** is ESM-only, so every workspace package moved to `"type": "module"` with `NodeNext` imports. The RabbitMQ topic-exchange routing was retested against a real broker and still works. One typing change was needed: `EventPattern` is now generic.
-- **Prisma 7.10** (the newest stable; npm's `latest` tag points at an 8.0 release candidate). It uses the new `prisma-client` generator, `prisma.config.ts`, and the `pg` driver adapter. With no query-engine binary, the Docker image no longer needs OpenSSL or `binaryTargets`.
-- Vitest 5, ESLint 10, React 19.3, Next 16.4 and Testcontainers 12 upgraded without code changes.
-- Runtime is **Node 24 LTS** (`node:24-alpine`), with `@types/node` 24 to match the runtime rather than the newest typings.
-
-## 10. Skeleton corrections: services folder and shadcn on Base UI
-
-**Prompt (Jenerson):** "backend/service should be backend/services then initial service for trade should be present as initial service. Let us use shadcn with Base UI for the component factory."
-
-**Outcome:**
-
-- The domain service moved to `backend/services/trade` (package `@blotter/trade-service`, queue `blotter.trade-service.rpc`, compose service `trade-service`). It still hosts audit, positions, pricing and auth, each as its own module, so any of them can later move into a sibling folder under `backend/services/`.
-- The frontend now uses shadcn's **base-nova** style on **Base UI** (`components.json` with `"style": "base-nova"`). Components live in `frontend/src/shared/ui`, `cn` in `src/shared/lib/utils.ts`, and the neutral theme with light and dark tokens in `globals.css`, plus `--buy`/`--sell` colours for the blotter. A `Providers` component adds next-themes, the tooltip provider and the sonner toaster.
-- The shadcn registry (ui.shadcn.com) could not be reached from the build sandbox, so Claude generated the components from the shadcn source repository with the same transforms the CLI uses (`createStyleMap`/`transformStyle` from `shadcn/utils`, lucide icons). The output matches what `npx shadcn add` produces for this style, and `components.json` lets later components be added with the CLI as normal.
-
-## 11. Moving the build to Jenerson's Mac
-
-**Prompt (Jenerson):** "Why are you building it on cloud sandbox? Do it on my local, even all the build. I need to see the app realtime working and building."
-
-**Outcome:** Jenerson decided that from now on all building and running happens on their own Mac, in the local repository, with nothing pushed and no remote added. Claude worked in that folder under Node 24 (installed with nvm from `.nvmrc`, since the shell's default was Node 22) and reported each step:
-
-- **shadcn regeneration with the real CLI.** The registry could not be reached from the sandbox in entry 10, so Jenerson asked for the components to be regenerated with `shadcn add ... --overwrite` locally. The CLI regenerated all 23 components and kept `components.json` and `globals.css`, including the `--buy`/`--sell` tokens, but it got the `utils` alias wrong: every component imported `cn` from a bare `'cn'` module, and it added an unrelated npm package called `cn` to the frontend. Claude pointed the imports back at `@/shared/lib/utils` and removed the package before committing, and the full build, typecheck, lint and test run passed.
-- **Configurable Postgres port.** `docker compose up` failed because host port 5432 was taken by a container from another of Jenerson's projects. Rather than stop that container, Claude proposed making the Postgres host port configurable the same way the API, realtime and web ports already were (`${POSTGRES_PORT:-5432}`, with `POSTGRES_PORT` in `.env.example`). The containers still talk to Postgres on 5432 inside the compose network. Jenerson agreed and runs the stack with `POSTGRES_PORT=5433`, and asked for the change to be committed.
-- Jenerson now watches the stack locally at http://localhost:8080 while each change is built and tested on the Mac.
+Claude moved positions onto AG Grid with the blotter's theme, a fixed header, a pinned totals row and flashing price and P&L cells. Create and amend moved into the same right-hand drawer as the audit trail. While checking it in the browser, Claude also moved the toasts, which were covering the drawer's buttons.
